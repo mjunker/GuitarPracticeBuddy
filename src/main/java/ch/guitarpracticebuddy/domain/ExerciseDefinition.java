@@ -1,0 +1,102 @@
+package ch.guitarpracticebuddy.domain;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static ch.lambdaj.Lambda.*;
+import static org.hamcrest.Matchers.equalTo;
+
+@Getter
+@Entity
+public class ExerciseDefinition {
+
+    @Id
+    @GeneratedValue
+    private int id;
+
+    @Setter
+    private String title;
+
+    @Setter
+    private String description;
+
+    @Setter
+    private int minutes;
+
+    @Setter
+    private int bpm;
+
+    private List<String> tags = new ArrayList<String>();
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<ExerciseInstance> plannedInstances = new ArrayList<ExerciseInstance>();
+    private List<ExerciseInstance> pastInstances = new ArrayList<ExerciseInstance>();
+
+
+    public ExerciseInstance getTodaysExercises() {
+        return selectFirst(plannedInstances,
+                having(on(ExerciseInstance.class).isForToday(), equalTo(true)));
+    }
+
+    public void deleteInstance(DateTime date) {
+        plannedInstances.removeAll(select(plannedInstances,
+                having(on(ExerciseInstance.class).getDay(), equalTo(date))));
+    }
+
+    public void createInstancesForEntireWeek() {
+        DateTime startDate = DateTime.now();
+        for (LocalDate localDate : new LocalDateRange(startDate.toLocalDate(), startDate.plusDays(6).toLocalDate())) {
+            ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
+            plannedInstances.add(instance);
+        }
+    }
+
+    public List<ExerciseInstance> getPlannedInstances() {
+        return plannedInstances;
+    }
+
+    public boolean isPlannedForToday() {
+        return getTodaysExercises() != null;
+    }
+
+    public int getSeconds() {
+        return getMinutes() * 60;
+    }
+
+    public int getMiliSeconds() {
+        return getSeconds() * 1000;
+    }
+
+    public int getClickIntervalInMs() {
+        if (getBpm() == 0) {
+            return Integer.MAX_VALUE;
+        }
+        return Math.round(60.00f / getBpm() * 1000);
+    }
+
+    public void tag(String string) {
+        tags.add(string);
+    }
+
+    public void removeTag(String string) {
+        tags.remove(string);
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public void deleteInstances(Iterable<ExerciseInstance> exerciseInstances) {
+        for (ExerciseInstance exerciseInstance : exerciseInstances) {
+            if (!exerciseInstance.isDone()) {
+                plannedInstances.remove(exerciseInstance);
+            }
+        }
+    }
+}
