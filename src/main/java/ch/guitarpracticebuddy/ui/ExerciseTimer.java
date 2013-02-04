@@ -8,13 +8,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Created with IntelliJ IDEA.
- * User: mjunker
- * Date: 2/3/13
- * Time: 11:19 AM
- * To change this template use File | Settings | File Templates.
- */
 class ExerciseTimer extends Timer {
 
     public static final int INTERVAL = 50;
@@ -22,7 +15,6 @@ class ExerciseTimer extends Timer {
     private final Timer clickTimer;
     private final PracticeForm practiceForm;
     private int currentTime = 0;
-
 
     ExerciseTimer(final PracticeForm practiceForm, final ExerciseDefinition exerciseDefinition) {
         super(INTERVAL, null);
@@ -37,7 +29,6 @@ class ExerciseTimer extends Timer {
             }
         });
         this.addActionListener(new MyActionListener(practiceForm, exerciseDefinition));
-
 
     }
 
@@ -98,11 +89,9 @@ class ExerciseTimer extends Timer {
             practiceForm.resetTimer();
         }
 
-
         private boolean isTimeUp() {
             return currentTime > exerciseDefinition.getMiliSeconds();
         }
-
 
     }
 }

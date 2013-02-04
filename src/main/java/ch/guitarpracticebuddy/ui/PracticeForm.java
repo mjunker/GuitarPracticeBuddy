@@ -30,7 +30,6 @@ public class PracticeForm {
         addListeners();
     }
 
-
     public void setData(PracticeBuddyBean practiceBuddyBean) {
         this.practiceBuddyBean = practiceBuddyBean;
         initExercises();
@@ -42,7 +41,6 @@ public class PracticeForm {
         };
         for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExcercisesForToday()) {
             model.addElement(exerciseDefinition);
-
 
         }
         this.exerciseList.setCellRenderer(new DefaultListCellRenderer() {
@@ -62,7 +60,6 @@ public class PracticeForm {
         this.exerciseList.setModel(model);
     }
 
-
     private void addListeners() {
         playButton.addActionListener(new ActionListener() {
             @Override
@@ -73,38 +70,52 @@ public class PracticeForm {
         exerciseList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+
                 resetTimer();
             }
         });
 
         KeyEventDispatcherUtil.addKeyListener(new KeyEventDispatcherUtil.KeyEventListener() {
+
             @Override
-            public void onKeyPressed(KeyEvent e) {
+            public void onKeyReleased(KeyEvent e) {
                 if (e.getKeyChar() == ' ') {
                     toggleTimer();
                 }
             }
+
+            @Override
+            public void onKeyPressed(KeyEvent e) {
+
+            }
         });
 
-
     }
-
 
     private void toggleTimer() {
 
         if (selectedExercise == null) {
             return;
         }
-        initTimerIfNecessary();
-        if (timer.isRunning()) {
-            timer.stop();
-            playButton.setText("Play");
+        if (timer != null && timer.isRunning()) {
+            stopTimer();
         } else {
-            timer.start();
-            playButton.setText("Pause");
+            startTimer();
         }
 
+    }
 
+    private void startTimer() {
+        initTimerIfNecessary();
+        timer.start();
+        playButton.setText("Pause");
+    }
+
+    private void stopTimer() {
+        if (timer != null) {
+            timer.stop();
+        }
+        playButton.setText("Play");
     }
 
     private void initTimerIfNecessary() {
@@ -115,19 +126,18 @@ public class PracticeForm {
     }
 
     public void resetTimer() {
+        stopTimer();
         initCurrentExcercise();
         resetProgressBar();
 
     }
 
     private void resetProgressBar() {
-        progressBar.setMinimum(0);
         progressBar.setValue(0);
         progressBar.setMaximum(1);
     }
 
     private void initProgressBar(ExerciseDefinition exerciseDefinition) {
-        progressBar.setMinimum(0);
         progressBar.setValue(0);
         progressBar.setMaximum(exerciseDefinition.getMiliSeconds());
     }
@@ -135,6 +145,7 @@ public class PracticeForm {
     private void initCurrentExcercise() {
         this.selectedExercise = (ExerciseDefinition) this.exerciseList.getSelectedValue();
         if (this.selectedExercise == null && !excercises.isEmpty()) {
+            // automatically select first element
             this.selectedExercise = excercises.get(0);
         }
     }
@@ -167,7 +178,6 @@ public class PracticeForm {
         return excercises.indexOf(selectedExercise) < excercises.size() - 1;
     }
 
-
     public ExerciseDefinition getSelectedExercise() {
         return selectedExercise;
     }
@@ -178,5 +188,6 @@ public class PracticeForm {
 
     public void refresh() {
         initExercises();
+        this.timer = null;
     }
 }
