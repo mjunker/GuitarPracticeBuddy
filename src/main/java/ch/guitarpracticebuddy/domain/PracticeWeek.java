@@ -1,5 +1,6 @@
 package ch.guitarpracticebuddy.domain;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -39,8 +40,15 @@ public class PracticeWeek {
     }
 
 
-    public void activate(ExerciseDefinition exerciseDefinition) {
-        exerciseDefinitions.add(exerciseDefinition);
+    public boolean activate(ExerciseDefinition exerciseDefinition) {
+        Preconditions.checkNotNull(exerciseDefinition);
+        if (!exerciseDefinitions.contains(exerciseDefinition)) {
+            exerciseDefinitions.add(exerciseDefinition);
+            exerciseDefinition.createInstancesForEntireWeek(getInterval());
+            return true;
+        }
+        return false;
+
     }
 
     private void assertValidWeek() {

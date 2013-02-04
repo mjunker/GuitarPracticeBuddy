@@ -2,6 +2,7 @@ package ch.guitarpracticebuddy.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.joda.time.LocalDate;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -73,5 +74,19 @@ public class PracticeBuddyBean {
         practiceWeek.clearAllExerciseInstances();
         em.remove(practiceWeek);
         this.practiceWeeks.remove(practiceWeek);
+    }
+
+    public ExerciseDefinition createNewExerciseDefinition() {
+        ExerciseDefinition exerciseDefinition = new ExerciseDefinition();
+        em.persist(exerciseDefinition);
+        this.exerciseDefinitions.add(exerciseDefinition);
+        return exerciseDefinition;
+    }
+
+    public PracticeWeek createNewPracticePlan(LocalDate startDate, LocalDate endDate) {
+        PracticeWeek practiceWeek = new PracticeWeek(startDate, endDate);
+        em.persist(practiceWeek);
+        this.practiceWeeks.add(practiceWeek);
+        return practiceWeek;
     }
 }

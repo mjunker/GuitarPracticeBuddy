@@ -26,8 +26,6 @@ public class Main {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("$objectdb/db/guitarpracticebuddy.odb");
         final EntityManager em = emf.createEntityManager();
 
-
-        createDummyData(em);
         em.getTransaction().begin();
         GuitarBuddyUi guitarBuddyUi = createMainModel(em);
         openUi(em, guitarBuddyUi);
@@ -69,37 +67,6 @@ public class Main {
             }
         });
 
-
-    }
-
-
-    private static void createDummyData(EntityManager em) {
-
-        em.getTransaction().begin();
-
-        PracticeWeek practiceWeek = new PracticeWeek(DateTime.now().toLocalDate(), DateTime.now().plusDays(6).toLocalDate());
-
-        em.persist(practiceWeek);
-
-        ExerciseDefinition exerciseDefinition = new ExerciseDefinition();
-        exerciseDefinition.setTitle("Test 1");
-        exerciseDefinition.setMinutes(1);
-        exerciseDefinition.setBpm(100);
-        exerciseDefinition.tag("Technique");
-        exerciseDefinition.createInstancesForEntireWeek();
-
-
-        ExerciseDefinition exerciseDefinition2 = new ExerciseDefinition();
-        exerciseDefinition2.setTitle("Test 2");
-        exerciseDefinition2.setMinutes(2);
-        exerciseDefinition2.setBpm(100);
-
-        exerciseDefinition2.createInstancesForEntireWeek();
-
-        practiceWeek.activate(exerciseDefinition);
-        practiceWeek.activate(exerciseDefinition2);
-
-        em.getTransaction().commit();
 
     }
 }

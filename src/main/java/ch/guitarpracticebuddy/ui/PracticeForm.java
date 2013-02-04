@@ -24,9 +24,9 @@ import java.util.List;
 public class PracticeForm {
     private JList exerciseList;
     private JPanel practicePanel;
-    private JPanel exerciseDetails;
     private JProgressBar progressBar;
     private JButton playButton;
+    private JPanel exerciseDetails;
     private JButton skipButton;
     private ExerciseDefinition selectedExercise;
     private List<ExerciseDefinition> excercises = new ArrayList<ExerciseDefinition>();

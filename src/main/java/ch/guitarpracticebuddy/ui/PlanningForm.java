@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.*;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -10,10 +11,12 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +45,8 @@ public class PlanningForm {
     private ExerciseDefinition selectedExerciseDef;
     private PracticeWeek selectedPracticeWeek;
     private PracticeBuddyBean practiceBuddyBean;
+    private DefaultMutableTreeNode practicePlansNode;
+    private DefaultMutableTreeNode allExercisesNode;
 
     public PlanningForm() {
 
@@ -81,23 +86,27 @@ public class PlanningForm {
     private void configure() {
         this.practicePlanTree.setRootVisible(false);
 
+        practicePlanTree.setDragEnabled(true);
+        practicePlanTree.getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION);
+        practicePlanTree.setDropMode(DropMode.USE_SELECTION);
 
-    }
-
-    private void buildTreeAndOpenSelectedPath() {
-        TreePath selectionPath = this.practicePlanTree.getSelectionPath();
-        buildTree();
-        this.practicePlanTree.expandPath(selectionPath.getParentPath());
-        this.practicePlanTree.scrollPathToVisible(selectionPath.getParentPath());
 
     }
 
 
     private void addListeners() {
+        addSelectionListener();
+        addKeyListener();
+        initDropTarget();
+        addFocusListener(titleField, descriptionField, durationField, bpmField);
+    }
+
+    private void addSelectionListener() {
         practicePlanTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                PathExtractor pathExtractor = new PathExtractor(e).invoke();
+                PathExtractor pathExtractor = new PathExtractor(e.getPath()).invoke();
                 updateModelFromView();
 
                 selectedPracticeWeek = null;
@@ -118,7 +127,9 @@ public class PlanningForm {
                 enableExcerciseDefPanel(pathExtractor.isUserModelIsExcerciseDef());
             }
         });
+    }
 
+    private void addKeyListener() {
         practicePlanTree.addKeyListener(new KeyListener() {
 
 
@@ -129,19 +140,7 @@ public class PlanningForm {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == '\b') {
-                    if (isExerciseDefOfPracticeWeekSelected()) {
-                        selectedPracticeWeek.deleteExerciseDef(selectedExerciseDef);
-                    }
-                    if (isStandaloneExerciseDefSelected()) {
-                        practiceBuddyBean.deleteExerciseDefinition(selectedExerciseDef);
-                    }
-
-                    if (isPracticeWeekSelected()) {
-                        practiceBuddyBean.deletePracticeWeek(selectedPracticeWeek);
-                    }
-
-                    buildTreeAndOpenSelectedPath();
-
+                    deleteFromModel();
                 }
 
             }
@@ -150,8 +149,53 @@ public class PlanningForm {
             public void keyReleased(KeyEvent e) {
             }
         });
+    }
 
-        addFocusListener(titleField, descriptionField, durationField, bpmField);
+
+    private void initDropTarget() {
+        practicePlanTree.setDropTarget(new DropTarget(practicePlanTree, TransferHandler.COPY,
+                new DropTargetAdapter() {
+                    @Override
+                    public void drop(DropTargetDropEvent event) {
+
+                        TreePath selectionPath = practicePlanTree.getSelectionPath();
+                        Point dropLocation = event.getLocation();
+                        TreePath targetPath = practicePlanTree.getClosestPathForLocation(
+                                dropLocation.x, dropLocation.y);
+
+                        if (isDropAllowed(selectionPath, targetPath)) {
+                            PathExtractor targetPathExtractor = new PathExtractor(targetPath).invoke();
+                            PathExtractor sourcePathExtractor = new PathExtractor(selectionPath).invoke();
+                            DefaultMutableTreeNode selectedNode = getSelectedNode();
+                            boolean activeSuccesful = targetPathExtractor.getPracticeWeek().activate(sourcePathExtractor.getExerciseDefinition());
+
+                            if (activeSuccesful) {
+                                targetPathExtractor.getPracticeWeekNode().add((MutableTreeNode) selectedNode.clone());
+                                event.dropComplete(true);
+                                practicePlanTree.updateUI();
+                            }
+
+                        } else {
+                            event.rejectDrop();
+                            event.dropComplete(false);
+                        }
+                    }
+
+                    private boolean isDropAllowed(TreePath sourcePath, TreePath targetPath) {
+                        return isPracticeWeekNode(targetPath) && isExerciseDefinitionPath(sourcePath);
+                    }
+
+                }));
+    }
+
+    private boolean isExerciseDefinitionPath(TreePath sourcePath) {
+        PathExtractor pathExtractor = new PathExtractor(sourcePath).invoke();
+        return pathExtractor.getExerciseDefinition() != null;
+    }
+
+    private boolean isPracticeWeekNode(TreePath targetPath) {
+        PathExtractor pathExtractor = new PathExtractor(targetPath).invoke();
+        return pathExtractor.getPracticeWeek() != null;
     }
 
     private boolean isExerciseDefOfPracticeWeekSelected() {
@@ -196,7 +240,10 @@ public class PlanningForm {
             field.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusLost(FocusEvent e) {
-                    getData(selectedExerciseDef);
+                    if (selectedExerciseDef != null) {
+
+                        getData(selectedExerciseDef);
+                    }
                 }
             });
         }
@@ -305,6 +352,7 @@ public class PlanningForm {
     }
 
     public void getData(ExerciseDefinition data) {
+
         data.setDescription(descriptionField.getText());
         data.setTitle(titleField.getText());
         data.setMinutes(Integer.parseInt(durationField.getText()));
@@ -322,17 +370,17 @@ public class PlanningForm {
     }
 
     private void buildTree() {
-        DefaultMutableTreeNode practicePlans = new DefaultMutableTreeNode("Practice Plans");
-        DefaultMutableTreeNode allExcercise = new DefaultMutableTreeNode("All Exercises");
+        practicePlansNode = new DefaultMutableTreeNode("Practice Plans");
+        allExercisesNode = new DefaultMutableTreeNode("All Exercises");
         DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
-        root.insert(practicePlans, 0);
-        root.insert(allExcercise, 1);
+        root.insert(practicePlansNode, 0);
+        root.insert(allExercisesNode, 1);
 
 
         DefaultTreeModel treeRoot = new DefaultTreeModel(root, true);
-        addPracticePlanModels(practicePlans);
-        addAllExcercisesModels(allExcercise);
+        addPracticePlanModels(practicePlansNode);
+        addAllExcercisesModels(allExercisesNode);
         practicePlanTree.setModel(treeRoot);
     }
 
@@ -345,19 +393,22 @@ public class PlanningForm {
 
     private void addPracticePlanModels(DefaultMutableTreeNode root) {
         for (final PracticeWeek practiceWeek : practiceBuddyBean.getPracticeWeeks()) {
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(practiceWeek) {
-
-                @Override
-                public String toString() {
-                    return DATE_TIME_FORMATTER.print(practiceWeek.getDateFrom())
-                            + "-" + DATE_TIME_FORMATTER.print(practiceWeek.getDateTo());
-                }
-            };
-
+            DefaultMutableTreeNode node = createPracticeWeekNode(practiceWeek);
             root.insert(node, 0);
             addExerciseDefNodes(practiceWeek, node);
 
         }
+    }
+
+    private DefaultMutableTreeNode createPracticeWeekNode(final PracticeWeek practiceWeek) {
+        return new DefaultMutableTreeNode(practiceWeek) {
+
+            @Override
+            public String toString() {
+                return DATE_TIME_FORMATTER.print(practiceWeek.getDateFrom())
+                        + "-" + DATE_TIME_FORMATTER.print(practiceWeek.getDateTo());
+            }
+        };
     }
 
     private void addExerciseDefNodes(PracticeWeek practiceWeek, DefaultMutableTreeNode practicePlanNode) {
@@ -397,23 +448,84 @@ public class PlanningForm {
         public void actionPerformed(ActionEvent ae) {
 
             if (ae.getActionCommand().equals("insert")) {
-                createNewExercise();
+                insertInModel();
             }
             if (ae.getActionCommand().equals("remove")) {
-                deleteExercise();
+                deleteFromModel();
+
             }
         }
     }
 
-    private void deleteExercise() {
-        // TODO delete in model
-        DefaultMutableTreeNode lastPathComponent = getSelectedNode();
+    private void insertInModel() {
         DefaultMutableTreeNode node;
-        node = (DefaultMutableTreeNode) lastPathComponent.getParent();
-        int nodeIndex = node.getIndex(lastPathComponent); // declare an integer to hold the selected nodes index
-        lastPathComponent.removeAllChildren();          // remove any children of selected node
-        node.remove(nodeIndex);            // remove the selected node, retain its siblings
-        refreshTree(lastPathComponent);
+
+        if (getSelectedNode().equals(practicePlansNode)) {
+            PracticeWeek newPracticePlan = practiceBuddyBean.createNewPracticePlan(DateTime.now().toLocalDate(), DateTime.now().plusDays(6).toLocalDate());
+            node = createPracticeWeekNode(newPracticePlan);
+        } else {
+            ExerciseDefinition newExerciseDefinition = practiceBuddyBean.createNewExerciseDefinition();
+            node = createExcerciseDefNode(newExerciseDefinition);
+
+            if (selectedPracticeWeek != null) {
+                selectedPracticeWeek.activate(newExerciseDefinition);
+                addNewNode(node, allExercisesNode);
+
+            }
+        }
+        addNewNode(node, getSelectedNode());
+
+
+    }
+
+    private void deleteFromModel() {
+        if (isExerciseDefOfPracticeWeekSelected()) {
+            selectedPracticeWeek.deleteExerciseDef(selectedExerciseDef);
+            removeSelectedNodeFromTree();
+
+        } else if (isStandaloneExerciseDefSelected()) {
+            practiceBuddyBean.deleteExerciseDefinition(selectedExerciseDef);
+            removeSelectedNodesWithSameUserObjectFromTree();
+
+        } else if (isPracticeWeekSelected()) {
+            practiceBuddyBean.deletePracticeWeek(selectedPracticeWeek);
+            removeSelectedNodeFromTree();
+
+        }
+
+    }
+
+    private void removeSelectedNodesWithSameUserObjectFromTree() {
+        DefaultMutableTreeNode lastPathComponent = getSelectedNode();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) practicePlanTree.getModel().getRoot();
+
+        removeAllNodesWithSameModel(root, lastPathComponent.getUserObject());
+
+    }
+
+    private void removeAllNodesWithSameModel(DefaultMutableTreeNode root, Object userObject) {
+        if (root.getUserObject() != null && root.getUserObject().equals(userObject)) {
+            removeNode(root);
+        } else {
+            for (int i = 0; i < root.getChildCount(); i++) {
+                removeAllNodesWithSameModel((DefaultMutableTreeNode) root.getChildAt(i), userObject);
+            }
+        }
+
+    }
+
+
+    private void removeSelectedNodeFromTree() {
+        DefaultMutableTreeNode lastPathComponent = getSelectedNode();
+        removeNode(lastPathComponent);
+    }
+
+    private void removeNode(DefaultMutableTreeNode nodeToRemove) {
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) nodeToRemove.getParent();
+        int nodeIndex = parent.getIndex(nodeToRemove);
+        nodeToRemove.removeAllChildren();
+        parent.remove(nodeIndex);
+        refreshTree(parent);
     }
 
     private DefaultMutableTreeNode getSelectedNode() {
@@ -421,17 +533,15 @@ public class PlanningForm {
         return (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
     }
 
-    private void createNewExercise() {
-        // TODO insert in model
+    private void addNewNode(DefaultMutableTreeNode node, DefaultMutableTreeNode parent) {
 
-        DefaultMutableTreeNode lastPathComponent = getSelectedNode();
-        DefaultMutableTreeNode node;
-        node = new DefaultMutableTreeNode();
-        lastPathComponent.add(node);
-        refreshTree(lastPathComponent);
+        parent.add(node);
+        refreshTree(parent);
     }
 
     private void refreshTree(DefaultMutableTreeNode lastPathComponent) {
         ((DefaultTreeModel) practicePlanTree.getModel()).nodeStructureChanged(lastPathComponent);
     }
+
+
 }

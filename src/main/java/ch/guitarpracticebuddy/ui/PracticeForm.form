@@ -1,99 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ch.guitarpracticebuddy.ui.PracticeForm">
   <grid id="27dc6" binding="practicePanel" layout-manager="FormLayout">
-    <rowspec value="center:10px:grow"/>
-    <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
+    <rowspec value="fill:600px:grow"/>
+    <rowspec value="top:3dlu:noGrow"/>
     <colspec value="fill:200px:noGrow"/>
     <constraints>
-      <xy x="20" y="20" width="693" height="609"/>
+      <xy x="20" y="20" width="693" height="761"/>
     </constraints>
     <properties/>
-    <border type="none"/>
+    <border type="empty"/>
     <children>
-      <grid id="c6be0" layout-manager="FormLayout">
-        <rowspec value="fill:d:grow"/>
+      <scrollpane id="70b6f">
+        <constraints>
+          <grid row="2" column="0" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-vert="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="adc61" class="javax.swing.JList" binding="exerciseList" custom-create="true">
+            <constraints/>
+            <properties>
+              <alignmentY value="0.5"/>
+              <model/>
+              <selectionMode value="0"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <grid id="43f9b" binding="exerciseDetails" layout-manager="FormLayout">
+        <rowspec value="center:d:grow"/>
         <rowspec value="top:3dlu:noGrow"/>
         <rowspec value="center:max(d;4px):noGrow"/>
-        <colspec value="fill:200px:noGrow"/>
+        <colspec value="fill:d:grow"/>
         <constraints>
-          <grid row="0" column="0" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="336" height="62"/>
+          </grid>
           <forms/>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="208ab" binding="exerciseDetails" layout-manager="FormLayout">
-            <rowspec value="fill:22px:noGrow"/>
-            <rowspec value="top:3dlu:noGrow"/>
-            <rowspec value="center:d:grow"/>
+          <grid id="d5bc9" layout-manager="FormLayout">
+            <rowspec value="bottom:d:grow"/>
+            <colspec value="fill:d:grow"/>
+            <colspec value="left:4dlu:noGrow"/>
             <colspec value="fill:d:grow"/>
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="336" height="62"/>
-              </grid>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="9184d" layout-manager="FormLayout">
-                <rowspec value="center:d:grow"/>
-                <colspec value="fill:d:grow"/>
-                <colspec value="left:4dlu:noGrow"/>
-                <colspec value="fill:d:grow"/>
+              <component id="36720" class="javax.swing.JButton" binding="playButton">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
-                <properties/>
-                <border type="none"/>
-                <children>
-                  <component id="ad577" class="javax.swing.JButton" binding="playButton">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Play"/>
-                    </properties>
-                  </component>
-                  <component id="3804a" class="javax.swing.JButton" binding="skipButton">
-                    <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Skip"/>
-                    </properties>
-                  </component>
-                </children>
-              </grid>
-              <component id="9e706" class="javax.swing.JProgressBar" binding="progressBar">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties/>
-              </component>
-            </children>
-          </grid>
-          <scrollpane id="70b6f">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-              <forms defaultalign-vert="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="adc61" class="javax.swing.JList" binding="exerciseList" custom-create="true">
-                <constraints/>
                 <properties>
-                  <model/>
+                  <text value="Play"/>
+                </properties>
+              </component>
+              <component id="9f0b8" class="javax.swing.JButton" binding="skipButton">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties>
+                  <text value="Skip"/>
                 </properties>
               </component>
             </children>
-          </scrollpane>
+          </grid>
+          <component id="38b4f" class="javax.swing.JProgressBar" binding="progressBar">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <forms defaultalign-horz="false"/>
+            </constraints>
+            <properties/>
+          </component>
         </children>
       </grid>
     </children>

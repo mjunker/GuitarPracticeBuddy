@@ -3,6 +3,7 @@ package ch.guitarpracticebuddy.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
@@ -21,7 +22,7 @@ public class ExerciseDefinition {
     private int id;
 
     @Setter
-    private String title;
+    private String title = "New exercise";
 
     @Setter
     private String description;
@@ -49,9 +50,8 @@ public class ExerciseDefinition {
                 having(on(ExerciseInstance.class).getDay(), equalTo(date))));
     }
 
-    public void createInstancesForEntireWeek() {
-        DateTime startDate = DateTime.now();
-        for (LocalDate localDate : new LocalDateRange(startDate.toLocalDate(), startDate.plusDays(6).toLocalDate())) {
+    public void createInstancesForEntireWeek(Interval interval) {
+        for (LocalDate localDate : new LocalDateRange(interval)) {
             ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
             plannedInstances.add(instance);
         }

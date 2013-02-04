@@ -9,15 +9,16 @@ import javax.swing.tree.TreePath;
 
 class PathExtractor {
 
-    private TreeSelectionEvent e;
     private boolean userModelIsExcerciseDef;
     private boolean userModelIsPracticeWeek;
     private boolean exerciseDefInPracticeWeek;
     private PracticeWeek practiceWeek;
     private ExerciseDefinition exerciseDefinition;
+    private final TreePath path;
+    private DefaultMutableTreeNode practiceWeekNode;
 
-    public PathExtractor(TreeSelectionEvent e) {
-        this.e = e;
+    public PathExtractor(TreePath path) {
+        this.path = path;
     }
 
 
@@ -35,7 +36,6 @@ class PathExtractor {
 
     public PathExtractor invoke() {
 
-        TreePath path = e.getPath();
         DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) path.getLastPathComponent();
         Object userObject = lastPathComponent.getUserObject();
 
@@ -43,7 +43,8 @@ class PathExtractor {
             DefaultMutableTreeNode previousLastPath = (DefaultMutableTreeNode) path.getPathComponent(path.getPathCount() - 2);
             exerciseDefInPracticeWeek = previousLastPath.getUserObject() instanceof PracticeWeek;
             if (exerciseDefInPracticeWeek) {
-                practiceWeek = (PracticeWeek) previousLastPath.getUserObject();
+                extractPracticeWeek(previousLastPath, previousLastPath.getUserObject());
+
             }
         }
 
@@ -54,9 +55,14 @@ class PathExtractor {
         }
         userModelIsPracticeWeek = userObject instanceof PracticeWeek;
         if (userModelIsPracticeWeek) {
-            this.practiceWeek = (PracticeWeek) userObject;
+            extractPracticeWeek(lastPathComponent, userObject);
         }
         return this;
+    }
+
+    private void extractPracticeWeek(DefaultMutableTreeNode lastPathComponent, Object userObject) {
+        this.practiceWeek = (PracticeWeek) userObject;
+        this.practiceWeekNode =  lastPathComponent;
     }
 
     public PracticeWeek getPracticeWeek() {
@@ -65,5 +71,9 @@ class PathExtractor {
 
     public ExerciseDefinition getExerciseDefinition() {
         return exerciseDefinition;
+    }
+
+    public DefaultMutableTreeNode getPracticeWeekNode() {
+        return this.practiceWeekNode;
     }
 }
