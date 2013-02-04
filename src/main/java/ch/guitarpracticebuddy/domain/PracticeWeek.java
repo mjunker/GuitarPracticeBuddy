@@ -94,4 +94,13 @@ public class PracticeWeek {
             deleteExerciseDef(exerciseDefinition);
         }
     }
+
+    public int calculateTotalMinutes() {
+
+        int sum = 0;
+        for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
+            sum += exerciseDefinition.getMinutes();
+        }
+        return sum;
+    }
 }

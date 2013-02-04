@@ -14,13 +14,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: mjunker
- * Date: 1/28/13
- * Time: 10:32 PM
- * To change this template use File | Settings | File Templates.
- */
 public class PracticeForm {
     private JList exerciseList;
     private JPanel practicePanel;
@@ -44,7 +37,7 @@ public class PracticeForm {
     }
 
     private void initExercises() {
-        DefaultListModel<ExerciseDefinition> model = new DefaultListModel<ExerciseDefinition>() {
+        DefaultListModel model = new DefaultListModel() {
 
         };
         for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExcercisesForToday()) {
@@ -54,7 +47,7 @@ public class PracticeForm {
         }
         this.exerciseList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel component = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 ExerciseDefinition exerciseDefinition = (ExerciseDefinition) value;
                 if (exerciseDefinition.getTodaysExercises().isDone()) {
@@ -150,7 +143,7 @@ public class PracticeForm {
         this.exerciseList = new JList();
         this.exerciseList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 ExerciseDefinition exerciseDefinition = (ExerciseDefinition) value;
                 if (exerciseDefinition.getTodaysExercises().isDone()) {

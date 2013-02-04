@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ch.guitarpracticebuddy.ui.PlanningForm">
-  <grid id="27dc6" binding="planningPanel" layout-manager="FormLayout">
+  <grid id="27dc6" binding="rootPanel" layout-manager="FormLayout">
     <rowspec value="fill:600px:grow"/>
     <rowspec value="fill:200px:noGrow"/>
     <colspec value="fill:d:grow"/>
@@ -140,22 +140,6 @@
           </scrollpane>
         </children>
       </grid>
-      <scrollpane id="f0c12">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="180" height="380"/>
-          </grid>
-          <forms defaultalign-horz="false" defaultalign-vert="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="9595a" class="javax.swing.JTree" binding="practicePlanTree">
-            <constraints/>
-            <properties/>
-          </component>
-        </children>
-      </scrollpane>
       <scrollpane id="b2650">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -164,7 +148,21 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="b4303" class="javax.swing.JTable" binding="exerciseOverviewTable" custom-create="true">
+          <component id="b4303" class="javax.swing.JTable" binding="exerciseOverviewTable">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <scrollpane id="b8998">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="2b4f3" class="ch.guitarpracticebuddy.ui.PracticePlanManagerTree" binding="practicePlanOverview" custom-create="true">
             <constraints/>
             <properties/>
           </component>

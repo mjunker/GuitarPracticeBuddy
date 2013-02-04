@@ -21,6 +21,9 @@ class PathExtractor {
         this.path = path;
     }
 
+    public boolean isRootNodeSelected() {
+        return exerciseDefinition == null && practiceWeek == null;
+    }
 
     public boolean isUserModelIsExcerciseDef() {
         return userModelIsExcerciseDef;
