@@ -41,7 +41,7 @@ public class Main {
         JFrame frame = new JFrame("GuitarBuddy");
         frame.setContentPane(guitarBuddyUi.getMainPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(800, 820));
+        frame.setPreferredSize(new Dimension(1440, 820));
 
         frame.pack();
         frame.setVisible(true);

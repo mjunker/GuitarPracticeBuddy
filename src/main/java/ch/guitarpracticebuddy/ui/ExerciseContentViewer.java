@@ -5,7 +5,6 @@ import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -74,7 +73,7 @@ public class ExerciseContentViewer {
         if (currentAttachment != null) {
             try {
                 BufferedImage image = ImageIO.read(FileUtil.toFiles(exerciseDefinition, currentAttachment));
-                ImageIcon imageIcon = new ImageIcon(scaleImage(image));
+                ImageIcon imageIcon = new ImageIcon(FileUtil.scaleImage(image));
                 contentLabel.setIcon(imageIcon);
             } catch (IOException e) {
             }
@@ -84,13 +83,6 @@ public class ExerciseContentViewer {
 
     }
 
-    private Image scaleImage(BufferedImage image) {
-        int actualWidth = Math.min(contentLabel.getWidth(), image.getWidth());
-        float scale = ((float) actualWidth) / image.getWidth();
-
-        return image.getScaledInstance(actualWidth,
-                (int) (image.getHeight() * scale), Image.SCALE_SMOOTH);
-    }
 
     private List<ExerciseAttachment> getAttachments() {
         if (exerciseDefinition == null) {
