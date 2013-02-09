@@ -42,6 +42,8 @@
             <rowspec value="center:max(d;4px):noGrow"/>
             <rowspec value="top:3dlu:noGrow"/>
             <rowspec value="center:149px:grow"/>
+            <rowspec value="top:3dlu:noGrow"/>
+            <rowspec value="center:max(d;4px):noGrow"/>
             <colspec value="fill:120px:noGrow"/>
             <colspec value="left:4dlu:noGrow"/>
             <colspec value="fill:200px:grow"/>
@@ -70,8 +72,8 @@
               </component>
               <component id="35e42" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
                   <text value="Description"/>
@@ -124,8 +126,8 @@
               </component>
               <component id="6f590" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                  <forms/>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-vert="false"/>
                 </constraints>
                 <properties>
                   <text value="Tags"/>
@@ -161,6 +163,40 @@
                   <component id="92bd4" class="javax.swing.JTextArea" binding="descriptionField">
                     <constraints/>
                     <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+              <component id="d5f46" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-vert="false"/>
+                </constraints>
+                <properties>
+                  <text value="Files"/>
+                </properties>
+              </component>
+              <component id="fc091" class="javax.swing.JButton" binding="selectFilesButton" default-binding="true">
+                <constraints>
+                  <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-horz="false"/>
+                </constraints>
+                <properties>
+                  <text value="Select Files"/>
+                </properties>
+              </component>
+              <scrollpane id="c8ba1">
+                <constraints>
+                  <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <forms defaultalign-horz="false" defaultalign-vert="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="ef7b2" class="javax.swing.JTextArea" binding="filesTextBox">
+                    <constraints/>
+                    <properties>
+                      <text value=""/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>

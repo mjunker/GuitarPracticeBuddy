@@ -13,12 +13,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-
 public class Main {
 
     public static void main(String[] args) {
 
         System.setProperty("objectdb.home", "/Users/mjunker/test");
+        System.setProperty("guitarbuddy.home", "/Users/mjunker/test");
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("$objectdb/db/guitarpracticebuddy.odb");
         final EntityManager em = emf.createEntityManager();
@@ -28,7 +28,6 @@ public class Main {
         openUi(em, guitarBuddyUi);
 
     }
-
 
     private static GuitarBuddyUi createMainModel(EntityManager em) {
         GuitarBuddyUi guitarBuddyUi = new GuitarBuddyUi();
@@ -42,7 +41,7 @@ public class Main {
         JFrame frame = new JFrame("GuitarBuddy");
         frame.setContentPane(guitarBuddyUi.getMainPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(815, 768));
+        frame.setPreferredSize(new Dimension(800, 820));
 
         frame.pack();
         frame.setVisible(true);
@@ -63,7 +62,6 @@ public class Main {
                 }
             }
         });
-
 
     }
 }

@@ -18,6 +18,13 @@ public class GuitarBuddyUi {
                 practiceForm.refresh();
             }
         });
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                practiceForm.save();
+                planningForm.save();
+            }
+        });
     }
 
     public PlanningForm getPlanningForm() {

@@ -4,7 +4,6 @@ import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.util.KeyEventDispatcherUtil;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -14,9 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +25,7 @@ public class PracticeForm {
     private JButton skipButton;
     private JSpinner bpmSpinner;
     private JCheckBox metronomeCheckbox;
+    private ExerciseContentViewer contentViewer;
     private JLabel imageLabel;
     private ExerciseDefinition selectedExercise;
     private List<ExerciseDefinition> excercises = new ArrayList<ExerciseDefinition>();
@@ -239,18 +236,7 @@ public class PracticeForm {
         this.selectedExercise = selectedValue;
         initBpm();
         initProgressBar();
-        initContentPanel();
-    }
-
-    private void initContentPanel() {
-        try {
-            BufferedImage image = ImageIO.read(new File(selectedExercise.getFilePath()));
-            ImageIcon imageIcon = new ImageIcon(
-                    image.getScaledInstance(800, 1170, Image.SCALE_SMOOTH));
-            imageLabel.setIcon(imageIcon);
-        } catch (IOException e) {
-        }
-
+        contentViewer.display(this.selectedExercise);
     }
 
     public void updateProgressBar(int time) {
@@ -268,5 +254,9 @@ public class PracticeForm {
 
     public int getBpm() {
         return (Integer) this.bpmSpinner.getValue();
+    }
+
+    public void save() {
+
     }
 }
