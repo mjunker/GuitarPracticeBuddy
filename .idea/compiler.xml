@@ -25,6 +25,9 @@
         <module name="GuitarPracticeBuddy" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="GuitarPracticeBuddy" target="1.6" />
+    </bytecodeTargetLevel>
   </component>
 </project>
 
