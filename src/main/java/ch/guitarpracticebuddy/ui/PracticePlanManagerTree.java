@@ -24,12 +24,17 @@ public class PracticePlanManagerTree extends JTree {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
             .appendDayOfWeekShortText()
             .appendLiteral(", ")
-            .appendDayOfMonth(2)
+            .appendDayOfMonth(1)
             .appendLiteral(".")
-            .appendMonthOfYear(2)
+            .appendMonthOfYear(1)
             .appendLiteral(".")
             .appendYear(2, 2)
             .toFormatter();
+
+    public static final DateTimeFormatter DAY_ONLY_FORMATTER = new DateTimeFormatterBuilder()
+            .appendDayOfWeekShortText()
+            .toFormatter();
+
     public static final int RIGHT_MOUSE = 3;
 
     private DefaultMutableTreeNode practicePlansNode;

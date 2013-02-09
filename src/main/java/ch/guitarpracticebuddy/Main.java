@@ -1,11 +1,8 @@
 package ch.guitarpracticebuddy;
 
-import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
-import ch.guitarpracticebuddy.domain.PracticeWeek;
 import ch.guitarpracticebuddy.ui.GuitarBuddyUi;
 import ch.guitarpracticebuddy.util.KeyEventDispatcherUtil;
-import org.joda.time.DateTime;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -45,7 +42,7 @@ public class Main {
         JFrame frame = new JFrame("GuitarBuddy");
         frame.setContentPane(guitarBuddyUi.getMainPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(1024, 768));
+        frame.setPreferredSize(new Dimension(815, 768));
 
         frame.pack();
         frame.setVisible(true);

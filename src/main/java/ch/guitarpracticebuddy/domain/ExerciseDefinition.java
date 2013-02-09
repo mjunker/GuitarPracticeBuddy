@@ -40,6 +40,7 @@ public class ExerciseDefinition {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<ExerciseInstance> plannedInstances = new ArrayList<ExerciseInstance>();
     private List<ExerciseInstance> pastInstances = new ArrayList<ExerciseInstance>();
+    private String filePath;
 
     public ExerciseInstance getTodaysExercises() {
         return selectFirst(plannedInstances,
@@ -109,6 +110,14 @@ public class ExerciseDefinition {
             return exerciseInstanceWithMaxBpm.getBpm();
         }
         return bpm;
+    }
+
+    public String getFilePath() {
+        return "/Users/mjunker/Downloads/thunderbird.jpg";
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     private static class IsNotInFuture extends BaseMatcher<DateTime> {

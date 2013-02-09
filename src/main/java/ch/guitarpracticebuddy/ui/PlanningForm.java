@@ -81,6 +81,7 @@ public class PlanningForm {
         }
         exerciseOverviewTable.setModel(dataModel);
         exerciseOverviewTable.createDefaultColumnsFromModel();
+        exerciseOverviewTable.getColumnModel().getColumn(0).setPreferredWidth(200);
 
         setCellRendererAndEditor(dataModel);
     }
@@ -96,7 +97,9 @@ public class PlanningForm {
                     Object valueFromModel = dataModel.getValueAt(row, column);
                     if (valueFromModel instanceof ExerciseInstance) {
                         JCheckBox checkBox = new JCheckBox();
+                        checkBox.setBackground(Color.WHITE);
                         checkBox.setSelected(((ExerciseInstance) valueFromModel).isDone());
+                        checkBox.setVerticalAlignment(SwingConstants.CENTER);
                         return checkBox;
                     } else {
                         return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -113,7 +116,7 @@ public class PlanningForm {
         List<String> columns = new ArrayList<String>();
         columns.add("Title");
         for (LocalDate localDate : getColumnRange()) {
-            columns.add(PracticePlanManagerTree.DATE_TIME_FORMATTER.print(localDate));
+            columns.add(PracticePlanManagerTree.DAY_ONLY_FORMATTER.print(localDate));
         }
         return columns.toArray(new String[columns.size()]);
     }

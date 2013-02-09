@@ -6,7 +6,9 @@
     <constraints>
       <xy x="20" y="20" width="960" height="846"/>
     </constraints>
-    <properties/>
+    <properties>
+      <opaque value="false"/>
+    </properties>
     <border type="none"/>
     <children>
       <tabbedpane id="a1651" binding="tabbedPane">
@@ -25,7 +27,9 @@
             <constraints>
               <tabbedpane title="Practice"/>
             </constraints>
-            <properties/>
+            <properties>
+              <opaque value="false"/>
+            </properties>
             <border type="none"/>
             <children>
               <nested-form id="a17a8" form-file="ch/guitarpracticebuddy/ui/PracticeForm.form" binding="practiceForm">
@@ -42,7 +46,9 @@
             <constraints>
               <tabbedpane title="Schedule"/>
             </constraints>
-            <properties/>
+            <properties>
+              <opaque value="false"/>
+            </properties>
             <border type="none"/>
             <children>
               <nested-form id="f24e5" form-file="ch/guitarpracticebuddy/ui/PlanningForm.form" binding="planningForm">
