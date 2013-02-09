@@ -19,16 +19,19 @@ class ExerciseTimer extends Timer {
     ExerciseTimer(final PracticeForm practiceForm, final ExerciseDefinition exerciseDefinition) {
         super(INTERVAL, null);
 
+        this.currentTime = exerciseDefinition.getTodaysExercises().getPracticedTime();
         this.practiceForm = practiceForm;
         this.exerciseDefinition = exerciseDefinition;
         this.clickTimer = new Timer(exerciseDefinition.getClickIntervalInMs(), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SoundUtil.playSound(SoundFile.CLICK);
+                if (practiceForm.isMetronomeEnabled()) {
+                    SoundUtil.playSound(SoundFile.CLICK);
+                }
 
             }
         });
-        this.addActionListener(new MyActionListener(practiceForm, exerciseDefinition));
+        this.addActionListener(new TimerActionListener(practiceForm, exerciseDefinition));
 
     }
 
@@ -42,18 +45,20 @@ class ExerciseTimer extends Timer {
     public void stop() {
         super.stop();
         this.clickTimer.stop();
+        exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
+
     }
 
     public ExerciseDefinition getExerciseDefinition() {
         return exerciseDefinition;
     }
 
-    private class MyActionListener implements ActionListener {
+    private class TimerActionListener implements ActionListener {
 
         private final PracticeForm practiceForm;
         private final ExerciseDefinition exerciseDefinition;
 
-        public MyActionListener(PracticeForm practiceForm, ExerciseDefinition exerciseDefinition) {
+        public TimerActionListener(PracticeForm practiceForm, ExerciseDefinition exerciseDefinition) {
             this.practiceForm = practiceForm;
             this.exerciseDefinition = exerciseDefinition;
         }
@@ -61,13 +66,12 @@ class ExerciseTimer extends Timer {
         @Override
         public void actionPerformed(ActionEvent e) {
             updateCurrentState();
-            Timer timer = (Timer) e.getSource();
 
             if (hasExerciseChanged()) {
-                timer.stop();
+                ExerciseTimer.this.stop();
             }
             if (isTimeUp()) {
-                finishTimer(timer);
+                finishTimer();
             }
 
         }
@@ -75,16 +79,19 @@ class ExerciseTimer extends Timer {
         private void updateCurrentState() {
             currentTime += INTERVAL;
             practiceForm.updateProgressBar(currentTime);
+            exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
+
         }
 
         private boolean hasExerciseChanged() {
             return practiceForm.getSelectedExercise() != exerciseDefinition;
         }
 
-        private void finishTimer(Timer timer) {
+        private void finishTimer() {
+
             SoundUtil.playSound(SoundFile.DONE);
-            timer.stop();
-            exerciseDefinition.getTodaysExercises().setDone();
+            ExerciseTimer.this.stop();
+            exerciseDefinition.getTodaysExercises().finish(practiceForm.getBpm(), currentTime);
             practiceForm.selectNextExcercise();
             practiceForm.resetTimer();
         }

@@ -5,6 +5,8 @@ import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.util.KeyEventDispatcherUtil;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -21,6 +23,8 @@ public class PracticeForm {
     private JButton playButton;
     private JPanel exerciseDetails;
     private JButton skipButton;
+    private JSpinner bpmSpinner;
+    private JCheckBox metronomeCheckbox;
     private ExerciseDefinition selectedExercise;
     private List<ExerciseDefinition> excercises = new ArrayList<ExerciseDefinition>();
     private ExerciseTimer timer;
@@ -49,7 +53,11 @@ public class PracticeForm {
                 JLabel component = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 ExerciseDefinition exerciseDefinition = (ExerciseDefinition) value;
                 if (exerciseDefinition.getTodaysExercises().isDone()) {
-                    component.setBackground(Color.GREEN);
+                    component.setBackground(new Color(214, 255, 220));
+                    component.setForeground(Color.BLACK);
+
+                } else if (exerciseDefinition.getTodaysExercises().isSkipped()) {
+                    component.setBackground(new Color(196, 215, 255));
                     component.setForeground(Color.BLACK);
 
                 }
@@ -57,6 +65,7 @@ public class PracticeForm {
                 return component;
             }
         });
+
         this.exerciseList.setModel(model);
     }
 
@@ -67,11 +76,30 @@ public class PracticeForm {
                 toggleTimer();
             }
         });
+        skipButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                stopTimer();
+                selectedExercise.getTodaysExercises().skip();
+            }
+        });
+
         exerciseList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-
                 resetTimer();
+                setSelectedExercise((ExerciseDefinition) exerciseList.getSelectedValue());
+            }
+        });
+
+        this.bpmSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                if (selectedExercise != null) {
+                    saveBpmSpinnerValueToModel();
+                    initProgressBar();
+                    resetTimer();
+                }
             }
         });
 
@@ -89,6 +117,22 @@ public class PracticeForm {
 
             }
         });
+
+    }
+
+    private void saveBpmSpinnerValueToModel() {
+        if (selectedExercise != null) {
+            selectedExercise.getTodaysExercises().setBpm((Integer) bpmSpinner.getValue());
+        }
+    }
+
+    private void initBpm() {
+        if (selectedExercise != null) {
+            this.bpmSpinner.setValue(this.selectedExercise.getBpm());
+        } else {
+            this.bpmSpinner.setValue(0);
+
+        }
 
     }
 
@@ -121,7 +165,7 @@ public class PracticeForm {
     private void initTimerIfNecessary() {
         if (timer == null || !timer.getExerciseDefinition().equals(selectedExercise)) {
             timer = new ExerciseTimer(this, selectedExercise);
-            initProgressBar(selectedExercise);
+            initProgressBar();
         }
     }
 
@@ -137,16 +181,20 @@ public class PracticeForm {
         progressBar.setMaximum(1);
     }
 
-    private void initProgressBar(ExerciseDefinition exerciseDefinition) {
-        progressBar.setValue(0);
-        progressBar.setMaximum(exerciseDefinition.getMiliSeconds());
+    private void initProgressBar() {
+        if (selectedExercise != null) {
+            progressBar.setMaximum(selectedExercise.getMiliSeconds());
+            progressBar.setValue(selectedExercise.getTodaysExercises().getPracticedTime());
+        } else {
+            resetProgressBar();
+        }
     }
 
     private void initCurrentExcercise() {
-        this.selectedExercise = (ExerciseDefinition) this.exerciseList.getSelectedValue();
+        setSelectedExercise((ExerciseDefinition) this.exerciseList.getSelectedValue());
         if (this.selectedExercise == null && !excercises.isEmpty()) {
             // automatically select first element
-            this.selectedExercise = excercises.get(0);
+            setSelectedExercise(excercises.get(0));
         }
     }
 
@@ -182,6 +230,12 @@ public class PracticeForm {
         return selectedExercise;
     }
 
+    private void setSelectedExercise(ExerciseDefinition selectedValue) {
+        this.selectedExercise = selectedValue;
+        initBpm();
+        initProgressBar();
+    }
+
     public void updateProgressBar(int time) {
         this.progressBar.setValue(time);
     }
@@ -189,5 +243,13 @@ public class PracticeForm {
     public void refresh() {
         initExercises();
         this.timer = null;
+    }
+
+    public boolean isMetronomeEnabled() {
+        return this.metronomeCheckbox.isSelected();
+    }
+
+    public int getBpm() {
+        return (Integer) this.bpmSpinner.getValue();
     }
 }

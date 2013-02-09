@@ -1,13 +1,15 @@
 package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.*;
+import com.google.common.base.Strings;
 import org.joda.time.LocalDate;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,8 +158,13 @@ public class PlanningForm {
         if (data != null) {
             data.setDescription(descriptionField.getText());
             data.setTitle(titleField.getText());
-            data.setMinutes(Integer.parseInt(durationField.getText()));
-            data.setBpm(Integer.parseInt(bpmField.getText()));
+            if (!Strings.isNullOrEmpty(durationField.getText())) {
+                data.setMinutes(Integer.parseInt(durationField.getText()));
+            }
+
+            if (!Strings.isNullOrEmpty(bpmField.getText())) {
+                data.setBpm(Integer.parseInt(bpmField.getText()));
+            }
             data.setTags(convertTags(tagList.getSelectedValues()));
         }
 
