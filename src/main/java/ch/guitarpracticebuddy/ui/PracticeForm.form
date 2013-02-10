@@ -3,17 +3,20 @@
   <grid id="27dc6" binding="practicePanel" layout-manager="FormLayout">
     <rowspec value="center:max(d;4px):noGrow"/>
     <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="fill:600px:grow"/>
+    <rowspec value="fill:d:grow"/>
     <rowspec value="top:3dlu:noGrow"/>
     <colspec value="fill:200px:noGrow"/>
     <colspec value="left:4dlu:noGrow"/>
     <colspec value="fill:p:noGrow"/>
     <constraints>
-      <xy x="20" y="20" width="1232" height="701"/>
+      <xy x="20" y="20" width="1408" height="805"/>
     </constraints>
     <properties>
       <background color="-1842205"/>
+      <maximumSize width="0" height="0"/>
+      <minimumSize width="0" height="0"/>
       <opaque value="false"/>
+      <preferredSize width="10000" height="10000"/>
     </properties>
     <border type="empty"/>
     <children>
@@ -22,7 +25,9 @@
           <grid row="2" column="0" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <forms defaultalign-vert="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <preferredSize width="0" height="0"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="adc61" class="javax.swing.JList" binding="exerciseList" custom-create="true">
@@ -125,14 +130,15 @@
         </children>
       </grid>
       <grid id="b74b2" layout-manager="FormLayout">
-        <rowspec value="center:d:grow"/>
+        <rowspec value="fill:p:grow"/>
         <colspec value="fill:p:grow"/>
         <constraints>
           <grid row="0" column="2" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-          <forms/>
+          <forms defaultalign-vert="false"/>
         </constraints>
         <properties>
           <background color="-1842205"/>
+          <minimumSize width="1200" height="750"/>
           <opaque value="false"/>
         </properties>
         <border type="none"/>
