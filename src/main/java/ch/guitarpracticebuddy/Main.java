@@ -38,9 +38,8 @@ public class Main {
     }
 
     private static void openUi(final EntityManager em, GuitarBuddyUi guitarBuddyUi) {
-        JFrame frame = new JFrame("GuitarBuddy");
+        final JFrame frame = new JFrame("GuitarBuddy");
         frame.setContentPane(guitarBuddyUi.getMainPanel());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(1440, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
 
         frame.pack();
@@ -49,7 +48,18 @@ public class Main {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                em.getTransaction().commit();
+                int answer = JOptionPane.showConfirmDialog(frame, "Do you want to save your changes?");
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+
+                if (answer == JOptionPane.YES_OPTION) {
+                    em.getTransaction().commit();
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+                } else if (answer == JOptionPane.NO_OPTION) {
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                }
             }
         });
 
