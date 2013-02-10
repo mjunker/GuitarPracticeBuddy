@@ -53,7 +53,7 @@ public class FileUtil {
     }
 
     private static String getExerciseDirectory(ExerciseDefinition exerciseDefinition) {
-        return EXERCISE_FOLDER_PREFIX + exerciseDefinition.getId();
+        return EXERCISE_FOLDER_PREFIX + exerciseDefinition.getCode();
     }
 
     private static String getApplicationHome() {

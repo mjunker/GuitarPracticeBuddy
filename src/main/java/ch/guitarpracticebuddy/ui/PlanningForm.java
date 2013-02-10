@@ -31,6 +31,7 @@ public class PlanningForm {
     private PracticePlanManagerTree practicePlanOverview;
     private JTextArea filesTextBox;
     private JButton selectFilesButton;
+    private JTextField codeField;
     private ExerciseDefinition selectedExerciseDef;
     private PracticeBuddyBean practiceBuddyBean;
 
@@ -52,8 +53,8 @@ public class PlanningForm {
         selectFilesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                updateModelFromForm();
                 JFileChooser fileChooser = new JFileChooser();
-
                 fileChooser.setMultiSelectionEnabled(true);
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 fileChooser.showOpenDialog(rootPanel);
@@ -97,6 +98,7 @@ public class PlanningForm {
         titleField.setEnabled(enabled);
         filesTextBox.setEnabled(enabled);
         tagList.setEnabled(enabled);
+        codeField.setEnabled(enabled);
     }
 
     public void setExerciseOverviewData(List<ExerciseDefinition> exerciseDefinitionList) {
@@ -179,6 +181,7 @@ public class PlanningForm {
             durationField.setText(Integer.valueOf(data.getMinutes()).toString());
             bpmField.setText(Integer.valueOf(data.getBpm()).toString());
             filesTextBox.setText(createAttachmentText(collect(data.getAttachments(), on(ExerciseAttachment.class).getFilePath())));
+            codeField.setText(data.getCode());
         } else {
             descriptionField.setText(null);
             titleField.setText(null);
@@ -186,6 +189,7 @@ public class PlanningForm {
             bpmField.setText(null);
             tagList.clearSelection();
             filesTextBox.setText(null);
+            codeField.setText(null);
         }
 
         updateTagList();
@@ -229,6 +233,7 @@ public class PlanningForm {
             }
             data.setTags(convertTags(tagList.getSelectedValues()));
             data.setAttachments(createAttachments());
+            data.setCode(codeField.getText());
         }
 
     }
