@@ -14,17 +14,13 @@ public class GuitarBuddyUi {
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                practiceForm.save();
+                planningForm.save();
                 planningForm.refresh();
                 practiceForm.refresh();
             }
         });
-        tabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent changeEvent) {
-                practiceForm.save();
-                planningForm.save();
-            }
-        });
+
     }
 
     public PlanningForm getPlanningForm() {

@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.*;
+import ch.guitarpracticebuddy.util.Constants;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -10,10 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +32,12 @@ public class PlanningForm {
     private JTextArea filesTextBox;
     private JButton selectFilesButton;
     private ExerciseDefinition selectedExerciseDef;
+    private PracticeBuddyBean practiceBuddyBean;
 
     public PlanningForm() {
 
         addListeners();
+        setupTagListContextMenu();
         configure();
     }
 
@@ -96,6 +96,7 @@ public class PlanningForm {
         bpmField.setEnabled(enabled);
         titleField.setEnabled(enabled);
         filesTextBox.setEnabled(enabled);
+        tagList.setEnabled(enabled);
     }
 
     public void setExerciseOverviewData(List<ExerciseDefinition> exerciseDefinitionList) {
@@ -177,8 +178,6 @@ public class PlanningForm {
             titleField.setText(data.getTitle());
             durationField.setText(Integer.valueOf(data.getMinutes()).toString());
             bpmField.setText(Integer.valueOf(data.getBpm()).toString());
-            // TODO MJU select tags
-            // tagList.setSelectedIndices(data.get);
             filesTextBox.setText(createAttachmentText(collect(data.getAttachments(), on(ExerciseAttachment.class).getFilePath())));
         } else {
             descriptionField.setText(null);
@@ -186,10 +185,28 @@ public class PlanningForm {
             durationField.setText(null);
             bpmField.setText(null);
             tagList.clearSelection();
-            tagList.setListData(new Object[]{});
             filesTextBox.setText(null);
         }
 
+        updateTagList();
+    }
+
+    private int[] getIndices(List<Tag> tags) {
+        List<Integer> indices = new ArrayList<Integer>();
+        for (Tag tag : tags) {
+            indices.add(practiceBuddyBean.getTags().indexOf(tag));
+        }
+
+        return toIntArray(indices);
+    }
+
+    private int[] toIntArray(List<Integer> indices) {
+
+        int[] intArr = new int[indices.size()];
+        for (Integer indice : indices) {
+            intArr[indices.indexOf(indice)] = indice;
+        }
+        return intArr;
     }
 
     private String createAttachmentText(List<String> filePaths) {
@@ -225,21 +242,24 @@ public class PlanningForm {
         return attachments;
     }
 
-    private List<String> convertTags(Object[] selectedValues) {
+    private List<Tag> convertTags(Object[] selectedValues) {
 
-        List<String> result = new ArrayList<String>();
+        List<Tag> result = new ArrayList<Tag>();
         for (Object selectedValue : selectedValues) {
-            result.add((String) selectedValue);
+            result.add((Tag) selectedValue);
         }
         return result;
     }
 
     public void setData(PracticeBuddyBean data) {
         practicePlanOverview.setPracticeBuddyBean(data);
+        this.practiceBuddyBean = data;
+        updateTagList();
     }
 
     public void refresh() {
         this.practicePlanOverview.refresh();
+        enableExcerciseDefPanel(false);
     }
 
     private void createUIComponents() {
@@ -248,5 +268,65 @@ public class PlanningForm {
 
     public void save() {
         updateModelFromForm();
+    }
+
+    private void setupTagListContextMenu() {
+        final JPopupMenu popup = new JPopupMenu();
+        JMenuItem mi = createInsertTagMenuItem();
+        popup.add(mi);
+        mi = createDeleteTagMenuItem();
+        popup.add(mi);
+        popup.setOpaque(true);
+        popup.setLightWeightPopupEnabled(true);
+
+        tagList.addMouseListener(
+                new MouseAdapter() {
+                    public void mouseReleased(MouseEvent e) {
+
+                        if (e.getButton() == Constants.RIGHT_MOUSE) {
+                            popup.show((JComponent) e.getSource(), e.getX(), e.getY());
+                        }
+                    }
+                }
+        );
+    }
+
+    private JMenuItem createInsertTagMenuItem() {
+        JMenuItem mi = new JMenuItem("Add Tag");
+        mi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String value = JOptionPane.showInputDialog("Enter tag name: ");
+                practiceBuddyBean.addTag(value);
+                updateTagList();
+            }
+        });
+        return mi;
+    }
+
+    private JMenuItem createDeleteTagMenuItem() {
+        JMenuItem mi;
+        mi = new JMenuItem("Delete Tag");
+        mi.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                practiceBuddyBean.deleteTag((Tag) tagList.getSelectedValue());
+                updateTagList();
+            }
+        });
+        return mi;
+    }
+
+    private void updateTagList() {
+
+        this.tagList.setListData(this.practiceBuddyBean.getTags().toArray());
+        if (selectedExerciseDef != null) {
+
+            tagList.setSelectedIndices(getIndices(selectedExerciseDef.getTags()));
+        } else {
+            tagList.setSelectedIndices(new int[0]);
+
+        }
+
     }
 }

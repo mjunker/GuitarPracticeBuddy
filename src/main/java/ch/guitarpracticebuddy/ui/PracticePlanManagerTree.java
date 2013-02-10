@@ -3,6 +3,7 @@ package ch.guitarpracticebuddy.ui;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.PracticeWeek;
+import ch.guitarpracticebuddy.util.Constants;
 import com.google.common.base.Joiner;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -34,8 +35,6 @@ public class PracticePlanManagerTree extends JTree {
     public static final DateTimeFormatter DAY_ONLY_FORMATTER = new DateTimeFormatterBuilder()
             .appendDayOfWeekShortText()
             .toFormatter();
-
-    public static final int RIGHT_MOUSE = 3;
 
     private DefaultMutableTreeNode practicePlansNode;
     private DefaultMutableTreeNode allExercisesNode;
@@ -112,6 +111,8 @@ public class PracticePlanManagerTree extends JTree {
                     }
                     updateExerciseOverview();
                     planningForm.enableExcerciseDefPanel(pathExtractor.isUserModelIsExcerciseDef());
+                } else {
+                    planningForm.enableExcerciseDefPanel(false);
                 }
 
             }
@@ -135,7 +136,7 @@ public class PracticePlanManagerTree extends JTree {
                 new MouseAdapter() {
                     public void mouseReleased(MouseEvent e) {
                         setSelectionPath(getClosestPathForLocation(e.getX(), e.getY()));
-                        if (e.getButton() == RIGHT_MOUSE) {
+                        if (e.getButton() == Constants.RIGHT_MOUSE) {
                             popup.show((JComponent) e.getSource(), e.getX(), e.getY());
                         }
                     }
@@ -218,10 +219,6 @@ public class PracticePlanManagerTree extends JTree {
 
     public PracticeWeek getSelectedPracticeWeek() {
         return selectedPracticeWeek;
-    }
-
-    public ExerciseDefinition getSelectedExerciseDefintion() {
-        return selectedExerciseDefinition;
     }
 
     public void updateLabels() {
@@ -327,7 +324,7 @@ public class PracticePlanManagerTree extends JTree {
 
     private void addNewNode(DefaultMutableTreeNode node, DefaultMutableTreeNode parent) {
 
-        parent.add(node);
+        parent.insert(node, 0);
         refreshTree(parent);
     }
 
@@ -349,12 +346,19 @@ public class PracticePlanManagerTree extends JTree {
         addPracticePlanModels(practicePlansNode);
         addAllExcercisesModels(allExercisesNode);
         setModel(treeRoot);
+        expandAllRows();
+    }
+
+    private void expandAllRows() {
+        for (int i = 0; i < getRowCount(); i++) {
+            expandRow(i);
+        }
     }
 
     private void addAllExcercisesModels(DefaultMutableTreeNode rootNode) {
         for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExerciseDefinitions()) {
             DefaultMutableTreeNode node = createExcerciseDefNode(exerciseDefinition);
-            rootNode.insert(node, 0);
+            rootNode.add(node);
         }
     }
 

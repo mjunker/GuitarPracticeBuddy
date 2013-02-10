@@ -35,7 +35,7 @@ public class ExerciseDefinition {
     @Setter
     private int bpm;
 
-    private List<String> tags = new ArrayList<String>();
+    private List<Tag> tags = new ArrayList<Tag>();
 
     @Setter
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -85,16 +85,12 @@ public class ExerciseDefinition {
         return Math.round(60.00f / getBpm() * 1000);
     }
 
-    public void tag(String string) {
-        tags.add(string);
+    public void tag(Tag tag) {
+        tags.add(tag);
     }
 
-    public void removeTag(String string) {
-        tags.remove(string);
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
     }
 
     public void deleteInstances(Iterable<ExerciseInstance> exerciseInstances) {
@@ -113,6 +109,10 @@ public class ExerciseDefinition {
             return exerciseInstanceWithMaxBpm.getBpm();
         }
         return bpm;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 
     private static class IsNotInFuture extends BaseMatcher<DateTime> {

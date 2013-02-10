@@ -13,14 +13,12 @@ class ExerciseTimer extends Timer {
     public static final int INTERVAL = 50;
     private final ExerciseDefinition exerciseDefinition;
     private final Timer clickTimer;
-    private final PracticeForm practiceForm;
     private int currentTime = 0;
 
     ExerciseTimer(final PracticeForm practiceForm, final ExerciseDefinition exerciseDefinition) {
         super(INTERVAL, null);
 
         this.currentTime = exerciseDefinition.getTodaysExercises().getPracticedTime();
-        this.practiceForm = practiceForm;
         this.exerciseDefinition = exerciseDefinition;
         this.clickTimer = new Timer(exerciseDefinition.getClickIntervalInMs(), new ActionListener() {
             @Override

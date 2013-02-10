@@ -13,6 +13,10 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class PracticeBuddyBean {
 
+    @Getter
+    @Setter
+    private List<Tag> tags;
+
     @Setter
     @Getter
     private List<PracticeWeek> practiceWeeks;
@@ -28,16 +32,20 @@ public class PracticeBuddyBean {
     private void init() {
         this.practiceWeeks = loadPracticePlans(em);
         this.exerciseDefinitions = loadExcerciseDefs(em);
+        this.tags = loadTags();
+    }
+
+    private List<Tag> loadTags() {
+        return em.createQuery("SELECT t FROM Tag t ORDER BY t.name", Tag.class).getResultList();
     }
 
     private static List<PracticeWeek> loadPracticePlans(EntityManager em) {
-        return em.createQuery("SELECT p FROM PracticeWeek p", PracticeWeek.class).getResultList();
+        return em.createQuery("SELECT p FROM PracticeWeek p ORDER BY p.dateFrom", PracticeWeek.class).getResultList();
     }
 
     private static List<ExerciseDefinition> loadExcerciseDefs(EntityManager em) {
-        return em.createQuery("SELECT e FROM ExerciseDefinition e", ExerciseDefinition.class).getResultList();
+        return em.createQuery("SELECT e FROM ExerciseDefinition e ORDER BY e.title", ExerciseDefinition.class).getResultList();
     }
-
 
     public List<ExerciseDefinition> getExerciseDefinitions() {
         return exerciseDefinitions;
@@ -88,5 +96,20 @@ public class PracticeBuddyBean {
         em.persist(practiceWeek);
         this.practiceWeeks.add(practiceWeek);
         return practiceWeek;
+    }
+
+    public void deleteTag(Tag selectedValue) {
+        this.tags.remove(selectedValue);
+        for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
+            exerciseDefinition.removeTag(selectedValue);
+        }
+        em.remove(selectedValue);
+    }
+
+    public Tag addTag(String value) {
+        Tag tag = new Tag(value);
+        this.tags.add(tag);
+        this.em.persist(tag);
+        return tag;
     }
 }
