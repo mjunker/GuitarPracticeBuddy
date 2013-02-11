@@ -1,10 +1,12 @@
 package ch.guitarpracticebuddy.domain;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.LocalDate;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,20 +15,26 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class PracticeBuddyBean {
 
+    private final EntityManager em;
     @Getter
     @Setter
     private List<Tag> tags;
-
     @Setter
     @Getter
     private List<PracticeWeek> practiceWeeks;
-
     private List<ExerciseDefinition> exerciseDefinitions;
-    private final EntityManager em;
 
     public PracticeBuddyBean(EntityManager em) {
         this.em = em;
         init();
+    }
+
+    private static List<PracticeWeek> loadPracticePlans(EntityManager em) {
+        return em.createQuery("SELECT p FROM PracticeWeek p ORDER BY p.dateFrom", PracticeWeek.class).getResultList();
+    }
+
+    private static List<ExerciseDefinition> loadExcerciseDefs(EntityManager em) {
+        return em.createQuery("SELECT e FROM ExerciseDefinition e ORDER BY e.title", ExerciseDefinition.class).getResultList();
     }
 
     private void init() {
@@ -39,16 +47,24 @@ public class PracticeBuddyBean {
         return em.createQuery("SELECT t FROM Tag t ORDER BY t.name", Tag.class).getResultList();
     }
 
-    private static List<PracticeWeek> loadPracticePlans(EntityManager em) {
-        return em.createQuery("SELECT p FROM PracticeWeek p ORDER BY p.dateFrom", PracticeWeek.class).getResultList();
+    public List<ExerciseDefinition> getExerciseDefinitions(List<Tag> selectedTags) {
+
+        if (selectedTags.isEmpty()) {
+            return exerciseDefinitions;
+        } else {
+            return filterExerciseDefinitions(selectedTags);
+        }
+
     }
 
-    private static List<ExerciseDefinition> loadExcerciseDefs(EntityManager em) {
-        return em.createQuery("SELECT e FROM ExerciseDefinition e ORDER BY e.title", ExerciseDefinition.class).getResultList();
-    }
-
-    public List<ExerciseDefinition> getExerciseDefinitions() {
-        return exerciseDefinitions;
+    private List<ExerciseDefinition> filterExerciseDefinitions(List<Tag> selectedTags) {
+        List<ExerciseDefinition> result = new ArrayList<ExerciseDefinition>();
+        for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
+            if (exerciseDefinition.getTags().containsAll(selectedTags)) {
+                result.add(exerciseDefinition);
+            }
+        }
+        return result;
     }
 
     public PracticeWeek getPracticePlanForToday() {
@@ -107,9 +123,14 @@ public class PracticeBuddyBean {
     }
 
     public Tag addTag(String value) {
-        Tag tag = new Tag(value);
-        this.tags.add(tag);
-        this.em.persist(tag);
-        return tag;
+        if (!Strings.isNullOrEmpty(value)) {
+            Tag tag = new Tag(value);
+            this.tags.add(tag);
+            this.em.persist(tag);
+            return tag;
+
+        }
+        return null;
+
     }
 }

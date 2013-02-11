@@ -24,6 +24,9 @@ public class ExerciseDefinition {
     private int id;
 
     @Setter
+    private String code;
+
+    @Setter
     private String title = "New exercise";
 
     @Setter

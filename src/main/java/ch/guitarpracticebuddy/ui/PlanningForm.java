@@ -31,8 +31,11 @@ public class PlanningForm {
     private PracticePlanManagerTree practicePlanOverview;
     private JTextArea filesTextBox;
     private JButton selectFilesButton;
+    private JTextField codeField;
+    private JPanel tagPanel;
     private ExerciseDefinition selectedExerciseDef;
     private PracticeBuddyBean practiceBuddyBean;
+    private List<Tag> selectedTags = new ArrayList<Tag>();
 
     public PlanningForm() {
 
@@ -52,8 +55,8 @@ public class PlanningForm {
         selectFilesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                updateModelFromForm();
                 JFileChooser fileChooser = new JFileChooser();
-
                 fileChooser.setMultiSelectionEnabled(true);
                 fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 fileChooser.showOpenDialog(rootPanel);
@@ -97,6 +100,7 @@ public class PlanningForm {
         titleField.setEnabled(enabled);
         filesTextBox.setEnabled(enabled);
         tagList.setEnabled(enabled);
+        codeField.setEnabled(enabled);
     }
 
     public void setExerciseOverviewData(List<ExerciseDefinition> exerciseDefinitionList) {
@@ -179,6 +183,7 @@ public class PlanningForm {
             durationField.setText(Integer.valueOf(data.getMinutes()).toString());
             bpmField.setText(Integer.valueOf(data.getBpm()).toString());
             filesTextBox.setText(createAttachmentText(collect(data.getAttachments(), on(ExerciseAttachment.class).getFilePath())));
+            codeField.setText(data.getCode());
         } else {
             descriptionField.setText(null);
             titleField.setText(null);
@@ -186,9 +191,10 @@ public class PlanningForm {
             bpmField.setText(null);
             tagList.clearSelection();
             filesTextBox.setText(null);
+            codeField.setText(null);
         }
 
-        updateTagList();
+        updateTags();
     }
 
     private int[] getIndices(List<Tag> tags) {
@@ -229,6 +235,7 @@ public class PlanningForm {
             }
             data.setTags(convertTags(tagList.getSelectedValues()));
             data.setAttachments(createAttachments());
+            data.setCode(codeField.getText());
         }
 
     }
@@ -254,7 +261,54 @@ public class PlanningForm {
     public void setData(PracticeBuddyBean data) {
         practicePlanOverview.setPracticeBuddyBean(data);
         this.practiceBuddyBean = data;
-        updateTagList();
+        updateTags();
+        updateTagPanel();
+    }
+
+    private void updateTagPanel() {
+        tagPanel.removeAll();
+        for (final Tag tag : practiceBuddyBean.getTags()) {
+            final JButton tagButton = new JButton();
+            tagButton.setBorderPainted(false);
+            tagButton.setText(tag.getName());
+            tagButton.setOpaque(false);
+            updateTagState(tag, tagButton);
+
+            tagButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    toggleTagSelected(tag);
+                    updateTagState(tag, tagButton);
+
+                }
+            });
+            tagPanel.add(tagButton);
+        }
+        tagPanel.repaint();
+    }
+
+    private void updateTagState(Tag tag, JButton panel) {
+        if (selectedTags.contains(tag)) {
+            panel.setForeground(Color.BLACK);
+
+        } else {
+            panel.setForeground(Color.LIGHT_GRAY);
+
+        }
+    }
+
+    private void toggleTagSelected(Tag tag) {
+        if (this.selectedTags.contains(tag)) {
+            this.selectedTags.remove(tag);
+        } else {
+            this.selectedTags.add(tag);
+        }
+        filterExercises();
+    }
+
+    private void filterExercises() {
+        practicePlanOverview.setTagFilter(selectedTags);
+        practicePlanOverview.refresh();
     }
 
     public void refresh() {
@@ -298,7 +352,7 @@ public class PlanningForm {
             public void actionPerformed(ActionEvent actionEvent) {
                 String value = JOptionPane.showInputDialog("Enter tag name: ");
                 practiceBuddyBean.addTag(value);
-                updateTagList();
+                updateTags();
             }
         });
         return mi;
@@ -311,13 +365,15 @@ public class PlanningForm {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 practiceBuddyBean.deleteTag((Tag) tagList.getSelectedValue());
-                updateTagList();
+                updateTags();
             }
         });
         return mi;
     }
 
-    private void updateTagList() {
+    private void updateTags() {
+
+        updateTagPanel();
 
         this.tagList.setListData(this.practiceBuddyBean.getTags().toArray());
         if (selectedExerciseDef != null) {
