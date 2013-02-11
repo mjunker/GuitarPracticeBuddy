@@ -3,6 +3,7 @@ package ch.guitarpracticebuddy.ui;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.PracticeWeek;
+import ch.guitarpracticebuddy.domain.Tag;
 import ch.guitarpracticebuddy.util.Constants;
 import com.google.common.base.Joiner;
 import org.joda.time.DateTime;
@@ -18,7 +19,9 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class PracticePlanManagerTree extends JTree {
 
@@ -43,6 +46,7 @@ public class PracticePlanManagerTree extends JTree {
     private PracticeWeek selectedPracticeWeek;
     private PlanningForm planningForm;
     private PracticeBuddyBean practiceBuddyBean;
+    private List<Tag> selectedTags = new ArrayList<Tag>();
 
     public PracticePlanManagerTree(PlanningForm planningForm) {
         this.planningForm = planningForm;
@@ -231,6 +235,15 @@ public class PracticePlanManagerTree extends JTree {
 
     }
 
+    public void setTagFilter(List<Tag> selectedTags) {
+        this.selectedTags = selectedTags;
+        filter();
+    }
+
+    private void filter() {
+        buildTree();
+    }
+
     private class PracticePlanTreeActionListener implements ActionListener {
         public void actionPerformed(ActionEvent ae) {
 
@@ -356,7 +369,7 @@ public class PracticePlanManagerTree extends JTree {
     }
 
     private void addAllExcercisesModels(DefaultMutableTreeNode rootNode) {
-        for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExerciseDefinitions()) {
+        for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExerciseDefinitions(selectedTags)) {
             DefaultMutableTreeNode node = createExcerciseDefNode(exerciseDefinition);
             rootNode.add(node);
         }
