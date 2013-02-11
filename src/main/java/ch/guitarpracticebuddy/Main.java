@@ -17,8 +17,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.setProperty("objectdb.home", "/Users/mjunker/test");
-        System.setProperty("guitarbuddy.home", "/Users/mjunker/test");
+        System.setProperty("objectdb.home", "/Users/mjunker/guitarbuddy");
+        System.setProperty("guitarbuddy.home", "/Users/mjunker/guitarbuddy");
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("$objectdb/db/guitarpracticebuddy.odb");
         final EntityManager em = emf.createEntityManager();
