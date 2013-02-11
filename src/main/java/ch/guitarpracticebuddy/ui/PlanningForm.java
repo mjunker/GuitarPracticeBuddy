@@ -48,6 +48,11 @@ public class PlanningForm {
         exerciseOverviewTable.getTableHeader().setEnabled(true);
         exerciseOverviewTable.setShowVerticalLines(false);
         exerciseOverviewTable.setShowHorizontalLines(true);
+        WrapLayout wrapLayout = new WrapLayout();
+        wrapLayout.setAlignment(FlowLayout.LEFT);
+        wrapLayout.setVgap(1);
+        wrapLayout.setHgap(1);
+        tagPanel.setLayout(wrapLayout);
     }
 
     private void addListeners() {
@@ -292,7 +297,7 @@ public class PlanningForm {
             panel.setForeground(Color.BLACK);
 
         } else {
-            panel.setForeground(Color.LIGHT_GRAY);
+            panel.setForeground(Color.GRAY);
 
         }
     }

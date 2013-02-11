@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ch.guitarpracticebuddy.ui.PlanningForm">
   <grid id="27dc6" binding="rootPanel" layout-manager="FormLayout">
-    <rowspec value="fill:max(d;4px):noGrow"/>
+    <rowspec value="fill:max(p;20px):grow"/>
     <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="fill:500px:grow"/>
     <rowspec value="fill:200px:noGrow"/>
-    <colspec value="fill:d:grow"/>
+    <colspec value="fill:min(d;800px):grow"/>
     <colspec value="left:4dlu:noGrow"/>
     <colspec value="fill:400px:noGrow"/>
     <constraints>
