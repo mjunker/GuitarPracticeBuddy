@@ -3,7 +3,9 @@ package ch.guitarpracticebuddy.util;
 import ch.guitarpracticebuddy.ui.PracticeForm;
 
 import javax.sound.sampled.*;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,7 +28,9 @@ public class SoundUtil {
 
     private static Clip loadClip(SoundFile soundFile) throws LineUnavailableException, UnsupportedAudioFileException, IOException {
         Clip clip = AudioSystem.getClip();
-        AudioInputStream inputStream = AudioSystem.getAudioInputStream(PracticeForm.class.getResourceAsStream(soundFile.getFileName()));
+        InputStream bufferedIn = new BufferedInputStream(PracticeForm.class.getResourceAsStream(soundFile.getFileName()));
+
+        AudioInputStream inputStream = AudioSystem.getAudioInputStream(bufferedIn);
         clip.open(inputStream);
         return clip;
     }
