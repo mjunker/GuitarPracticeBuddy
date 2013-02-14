@@ -16,7 +16,7 @@ public class FileUtil {
 
     public static final String SEPARATOR = "/";
     public static final String EXERCISE_FOLDER_PREFIX = "exercise_data/exercise_";
-    private static final int DEFAULT_IMAGE_WIDTH = 1200;
+    private static final int DEFAULT_IMAGE_WIDTH = 800;
 
     public static List<String> copyFilesToApplicationHome(File[] selectedFiles, ExerciseDefinition exerciseDefinition) {
         List<String> fileNames = new ArrayList<String>();

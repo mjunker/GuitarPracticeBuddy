@@ -6,7 +6,7 @@
     <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="fill:500px:grow"/>
     <rowspec value="fill:200px:noGrow"/>
-    <colspec value="fill:min(d;800px):grow"/>
+    <colspec value="fill:min(d;600px):grow"/>
     <colspec value="left:4dlu:noGrow"/>
     <colspec value="fill:400px:noGrow"/>
     <constraints>

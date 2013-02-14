@@ -82,7 +82,7 @@ public class PlanningForm {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFrame frame = new JFrame();
-                frame.setPreferredSize(new Dimension(1000, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
+                frame.setPreferredSize(new Dimension(900, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
 
                 ExerciseContentViewer exerciseContentViewer = new ExerciseContentViewer();
                 exerciseContentViewer.display(selectedExerciseDef);

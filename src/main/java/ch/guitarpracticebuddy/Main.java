@@ -40,7 +40,7 @@ public class Main {
     private static void openUi(final EntityManager em, GuitarBuddyUi guitarBuddyUi) {
         final JFrame frame = new JFrame("GuitarBuddy");
         frame.setContentPane(guitarBuddyUi.getMainPanel());
-        frame.setPreferredSize(new Dimension(1440, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
+        frame.setPreferredSize(new Dimension(1070, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
 
         frame.pack();
         frame.setVisible(true);
