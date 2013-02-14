@@ -3,6 +3,8 @@
   <grid id="27dc6" binding="practicePanel" layout-manager="FormLayout">
     <rowspec value="center:max(d;4px):noGrow"/>
     <rowspec value="top:3dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="fill:d:grow"/>
     <rowspec value="top:3dlu:noGrow"/>
     <colspec value="fill:200px:noGrow"/>
@@ -22,7 +24,7 @@
     <children>
       <scrollpane id="70b6f">
         <constraints>
-          <grid row="2" column="0" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <forms defaultalign-vert="false"/>
         </constraints>
         <properties>
@@ -133,7 +135,7 @@
         <rowspec value="fill:p:grow"/>
         <colspec value="fill:p:grow"/>
         <constraints>
-          <grid row="0" column="2" row-span="3" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="2" row-span="5" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <forms defaultalign-vert="false"/>
         </constraints>
         <properties>
@@ -151,6 +153,19 @@
           </nested-form>
         </children>
       </grid>
+      <component id="5df18" class="javax.swing.JSlider" binding="ratingSlider">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false"/>
+        </constraints>
+        <properties>
+          <majorTickSpacing value="1"/>
+          <maximum value="3"/>
+          <minorTickSpacing value="1"/>
+          <paintTicks value="true"/>
+          <snapToTicks value="true"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

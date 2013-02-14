@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.google.common.base.Strings.repeat;
+
 public class PracticePlanManagerTree extends JTree {
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
@@ -428,7 +430,13 @@ public class PracticePlanManagerTree extends JTree {
 
             @Override
             public String toString() {
-                return exerciseDefinition.getTitle();
+                StringBuilder sb = new StringBuilder();
+                sb.append(exerciseDefinition.getTitle());
+                if (exerciseDefinition.getRating() != null && exerciseDefinition.getRating().getLevel() > 0) {
+                    sb.append(" ");
+                    sb.append(repeat("*", exerciseDefinition.getRating().getLevel()));
+                }
+                return sb.toString();
             }
         };
     }

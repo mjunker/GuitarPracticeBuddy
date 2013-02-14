@@ -38,6 +38,9 @@ public class ExerciseDefinition {
     @Setter
     private int bpm;
 
+    @Setter
+    private Rating rating = Rating.HARD;
+
     private List<Tag> tags = new ArrayList<Tag>();
 
     @Setter
@@ -51,11 +54,6 @@ public class ExerciseDefinition {
     public ExerciseInstance getTodaysExercises() {
         return selectFirst(plannedInstances,
                 having(on(ExerciseInstance.class).isForToday(), equalTo(true)));
-    }
-
-    public void deleteInstance(DateTime date) {
-        plannedInstances.removeAll(select(plannedInstances,
-                having(on(ExerciseInstance.class).getDay(), equalTo(date))));
     }
 
     public void createInstancesForEntireWeek(Interval interval) {
@@ -129,5 +127,12 @@ public class ExerciseDefinition {
         public void describeTo(Description description) {
             //To change body of implemented methods use File | Settings | File Templates.
         }
+    }
+
+    public Rating getRating() {
+        if (rating == null) {
+            return Rating.HARD;
+        }
+        return rating;
     }
 }

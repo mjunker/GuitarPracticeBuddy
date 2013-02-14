@@ -12,14 +12,22 @@ class ExerciseTimer extends Timer {
 
     public static final int INTERVAL = 50;
     private final ExerciseDefinition exerciseDefinition;
-    private final Timer clickTimer;
+    private Timer clickTimer;
     private int currentTime = 0;
+    private final PracticeForm practiceForm;
 
     ExerciseTimer(final PracticeForm practiceForm, final ExerciseDefinition exerciseDefinition) {
         super(INTERVAL, null);
 
         this.currentTime = exerciseDefinition.getTodaysExercises().getPracticedTime();
         this.exerciseDefinition = exerciseDefinition;
+        initBpmTimer();
+        this.practiceForm = practiceForm;
+        this.addActionListener(new TimerActionListener(practiceForm, exerciseDefinition));
+
+    }
+
+    private void initBpmTimer() {
         this.clickTimer = new Timer(exerciseDefinition.getClickIntervalInMs(), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -29,8 +37,6 @@ class ExerciseTimer extends Timer {
 
             }
         });
-        this.addActionListener(new TimerActionListener(practiceForm, exerciseDefinition));
-
     }
 
     @Override
@@ -49,6 +55,16 @@ class ExerciseTimer extends Timer {
 
     public ExerciseDefinition getExerciseDefinition() {
         return exerciseDefinition;
+    }
+
+    public void restartBpmTimer() {
+        if (this.clickTimer != null) {
+            this.clickTimer.stop();
+        }
+        initBpmTimer();
+        if (isRunning()) {
+            clickTimer.start();
+        }
     }
 
     private class TimerActionListener implements ActionListener {

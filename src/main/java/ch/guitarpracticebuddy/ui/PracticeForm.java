@@ -2,6 +2,7 @@ package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
+import ch.guitarpracticebuddy.domain.Rating;
 import ch.guitarpracticebuddy.util.KeyEventDispatcherUtil;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class PracticeForm {
     private JSpinner bpmSpinner;
     private JCheckBox metronomeCheckbox;
     private ExerciseContentViewer contentViewer;
+    private JSlider ratingSlider;
     private JLabel imageLabel;
     private ExerciseDefinition selectedExercise;
     private List<ExerciseDefinition> excercises = new ArrayList<ExerciseDefinition>();
@@ -42,9 +44,7 @@ public class PracticeForm {
     }
 
     private void initExercises() {
-        DefaultListModel model = new DefaultListModel() {
-
-        };
+        DefaultListModel model = new DefaultListModel();
         for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExcercisesForToday()) {
             model.addElement(exerciseDefinition);
 
@@ -69,6 +69,13 @@ public class PracticeForm {
         });
 
         this.exerciseList.setModel(model);
+        selectFirstExercise();
+    }
+
+    private void selectFirstExercise() {
+        if (!practiceBuddyBean.getExcercisesForToday().isEmpty()) {
+            setSelectedExercise(practiceBuddyBean.getExcercisesForToday().get(0));
+        }
     }
 
     private void addListeners() {
@@ -99,8 +106,16 @@ public class PracticeForm {
             public void stateChanged(ChangeEvent changeEvent) {
                 if (selectedExercise != null) {
                     saveBpmSpinnerValueToModel();
-                    initProgressBar();
-                    resetTimer();
+                    restartBpmTime();
+                }
+            }
+        });
+        ratingSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                if (selectedExercise != null) {
+                    selectedExercise.setRating(Rating.fromValue(ratingSlider.getValue()));
+
                 }
             }
         });
@@ -120,6 +135,12 @@ public class PracticeForm {
             }
         });
 
+    }
+
+    private void restartBpmTime() {
+        if (this.timer != null) {
+            this.timer.restartBpmTimer();
+        }
     }
 
     private void saveBpmSpinnerValueToModel() {
@@ -237,6 +258,14 @@ public class PracticeForm {
         initBpm();
         initProgressBar();
         contentViewer.display(this.selectedExercise);
+        initRatingSlider();
+    }
+
+    private void initRatingSlider() {
+        if (this.selectedExercise != null) {
+            ratingSlider.setValue(this.selectedExercise.getRating().getLevel());
+
+        }
     }
 
     public void updateProgressBar(int time) {

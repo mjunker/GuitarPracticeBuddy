@@ -72,19 +72,12 @@ public class ExerciseInstance {
         this.practicedTime = practicedTime;
     }
 
-    private void resetProgress() {
-        this.practicedTime = 0;
-    }
-
     public int getBpm() {
         return this.actualBpm;
 
     }
 
     public void setBpm(int bpm) {
-        if (actualBpm != bpm) {
-            resetProgress();
-        }
         this.actualBpm = bpm;
 
     }

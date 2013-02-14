@@ -2,6 +2,7 @@ package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.ExerciseAttachment;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseContentViewer {
+
+    @Getter
     private JPanel rootPanel;
     private JButton previousButton;
     private JButton nextButton;
@@ -82,7 +85,6 @@ public class ExerciseContentViewer {
         }
 
     }
-
 
     private List<ExerciseAttachment> getAttachments() {
         if (exerciseDefinition == null) {

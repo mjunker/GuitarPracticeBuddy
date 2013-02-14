@@ -8,6 +8,8 @@ import com.google.common.base.Strings;
 import org.joda.time.LocalDate;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -33,6 +35,8 @@ public class PlanningForm {
     private JButton selectFilesButton;
     private JTextField codeField;
     private JPanel tagPanel;
+    private JSlider ratingSlider;
+    private JButton viewContentButton;
     private ExerciseDefinition selectedExerciseDef;
     private PracticeBuddyBean practiceBuddyBean;
     private List<Tag> selectedTags = new ArrayList<Tag>();
@@ -68,6 +72,26 @@ public class PlanningForm {
                 appendFiles(fileChooser.getSelectedFiles(), PlanningForm.this.selectedExerciseDef);
             }
         });
+        ratingSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                updateModelFromForm();
+            }
+        });
+        viewContentButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFrame frame = new JFrame();
+                frame.setPreferredSize(new Dimension(1000, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
+
+                ExerciseContentViewer exerciseContentViewer = new ExerciseContentViewer();
+                exerciseContentViewer.display(selectedExerciseDef);
+                frame.add(exerciseContentViewer.getRootPanel());
+                frame.pack();
+
+                frame.setVisible(true);
+            }
+        });
     }
 
     private void appendFiles(File[] selectedFiles, ExerciseDefinition exerciseDefinition) {
@@ -86,7 +110,6 @@ public class PlanningForm {
                 @Override
                 public void focusLost(FocusEvent e) {
                     updateModelFromForm();
-                    practicePlanOverview.updateLabels();
 
                 }
             });
@@ -96,6 +119,7 @@ public class PlanningForm {
 
     private void updateModelFromForm() {
         getData(selectedExerciseDef);
+        practicePlanOverview.updateLabels();
     }
 
     public void enableExcerciseDefPanel(boolean enabled) {
@@ -106,6 +130,7 @@ public class PlanningForm {
         filesTextBox.setEnabled(enabled);
         tagList.setEnabled(enabled);
         codeField.setEnabled(enabled);
+        ratingSlider.setEnabled(enabled);
     }
 
     public void setExerciseOverviewData(List<ExerciseDefinition> exerciseDefinitionList) {
@@ -189,6 +214,7 @@ public class PlanningForm {
             bpmField.setText(Integer.valueOf(data.getBpm()).toString());
             filesTextBox.setText(createAttachmentText(collect(data.getAttachments(), on(ExerciseAttachment.class).getFilePath())));
             codeField.setText(data.getCode());
+            ratingSlider.setValue(data.getRating().getLevel());
         } else {
             descriptionField.setText(null);
             titleField.setText(null);
@@ -197,6 +223,8 @@ public class PlanningForm {
             tagList.clearSelection();
             filesTextBox.setText(null);
             codeField.setText(null);
+            ratingSlider.setValue(1);
+
         }
 
         updateTags();
@@ -241,6 +269,7 @@ public class PlanningForm {
             data.setTags(convertTags(tagList.getSelectedValues()));
             data.setAttachments(createAttachments());
             data.setCode(codeField.getText());
+            data.setRating(Rating.fromValue(ratingSlider.getValue()));
         }
 
     }
