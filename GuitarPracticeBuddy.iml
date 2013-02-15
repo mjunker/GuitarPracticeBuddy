@@ -21,7 +21,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.objectdb:objectdb:2.2.5" level="project" />
     <orderEntry type="library" name="Maven: jgoodies:forms:1.0.5" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:r09" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:14.0-rc1" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:forms_rt:5.0" level="project" />
   </component>
 </module>

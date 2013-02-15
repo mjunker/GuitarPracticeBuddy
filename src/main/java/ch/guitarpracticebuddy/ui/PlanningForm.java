@@ -52,11 +52,20 @@ public class PlanningForm {
         exerciseOverviewTable.getTableHeader().setEnabled(true);
         exerciseOverviewTable.setShowVerticalLines(false);
         exerciseOverviewTable.setShowHorizontalLines(true);
-        WrapLayout wrapLayout = new WrapLayout();
-        wrapLayout.setAlignment(FlowLayout.LEFT);
-        wrapLayout.setVgap(1);
-        wrapLayout.setHgap(1);
+        WrapLayout wrapLayout = new WrapLayout(FlowLayout.LEFT, 0, 0);
         tagPanel.setLayout(wrapLayout);
+        tagList.setSelectionModel(new DefaultListSelectionModel() {
+            @Override
+            public void setSelectionInterval(int start, int end) {
+                if (start != end) {
+                    super.setSelectionInterval(start, end);
+                } else if (isSelectedIndex(start)) {
+                    removeSelectionInterval(start, end);
+                } else {
+                    addSelectionInterval(start, end);
+                }
+            }
+        });
     }
 
     private void addListeners() {
@@ -307,6 +316,8 @@ public class PlanningForm {
             tagButton.setText(tag.getName());
             tagButton.setOpaque(false);
             updateTagState(tag, tagButton);
+            tagButton.setMargin(new Insets(0, 0, 0, 0));
+
 
             tagButton.addActionListener(new ActionListener() {
                 @Override
@@ -317,6 +328,7 @@ public class PlanningForm {
                 }
             });
             tagPanel.add(tagButton);
+
         }
         tagPanel.repaint();
     }
@@ -409,14 +421,35 @@ public class PlanningForm {
 
         updateTagPanel();
 
-        this.tagList.setListData(this.practiceBuddyBean.getTags().toArray());
-        if (selectedExerciseDef != null) {
 
-            tagList.setSelectedIndices(getIndices(selectedExerciseDef.getTags()));
+        if (selectedExerciseDef != null) {
+            List<Tag> tags = this.practiceBuddyBean.getTags();
+            int[] selectedIndizes = getIndices(selectedExerciseDef.getTags());
+            sortTags(tags, selectedIndizes);
+            this.tagList.setListData(tags.toArray());
+            tagList.setSelectedIndices(toIntArray(createIndizes()));
         } else {
             tagList.setSelectedIndices(new int[0]);
 
         }
 
+    }
+
+    private List<Integer> createIndizes() {
+
+        List<Integer> indices = new ArrayList<Integer>();
+        int i = 0;
+        for (Tag tag : selectedExerciseDef.getTags()) {
+            indices.add(i);
+            i++;
+        }
+        return indices;
+    }
+
+    private void sortTags(List<Tag> tags, int[] selectedIndizes) {
+        for (int selectedIndize : selectedIndizes) {
+            Tag removedTag = tags.remove(selectedIndize);
+            tags.add(0, removedTag);
+        }
     }
 }

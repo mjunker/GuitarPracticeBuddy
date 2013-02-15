@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.equalTo;
 public class PracticeBuddyBean {
 
     private final EntityManager em;
-    @Getter
     @Setter
     private List<Tag> tags;
     @Setter
@@ -132,5 +131,9 @@ public class PracticeBuddyBean {
         }
         return null;
 
+    }
+
+    public List<Tag> getTags() {
+        return new ArrayList<Tag>(tags);
     }
 }

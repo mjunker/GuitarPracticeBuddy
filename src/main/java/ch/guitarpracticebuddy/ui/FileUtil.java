@@ -39,7 +39,8 @@ public class FileUtil {
             @Override
             public void run() {
                 try {
-                    ImageIO.write(scaleImage(ImageIO.read(destination)), "jpg", destination);
+                    BufferedImage read = ImageIO.read(destination);
+                    ImageIO.write(scaleImage(read), "jpg", destination);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
