@@ -137,12 +137,6 @@ public class PracticeForm {
 
     }
 
-    private void restartBpmTime() {
-        if (this.timer != null) {
-            this.timer.restartBpmTimer();
-        }
-    }
-
     private void saveBpmSpinnerValueToModel() {
         if (selectedExercise != null) {
             selectedExercise.getTodaysExercises().setBpm((Integer) bpmSpinner.getValue());
@@ -157,6 +151,12 @@ public class PracticeForm {
 
         }
 
+    }
+
+    private void restartBpmTime() {
+        if (this.timer != null) {
+            this.timer.restartBpmTimer();
+        }
     }
 
     private void toggleTimer() {
@@ -187,7 +187,7 @@ public class PracticeForm {
 
     private void initTimerIfNecessary() {
         if (timer == null || !timer.getExerciseDefinition().equals(selectedExercise)) {
-            timer = new ExerciseTimer(this, selectedExercise);
+            timer = new ExerciseTimer(selectedExercise);
             initProgressBar();
         }
     }

@@ -22,6 +22,15 @@ public class PracticeBuddyBean {
     @Getter
     private List<PracticeWeek> practiceWeeks;
     private List<ExerciseDefinition> exerciseDefinitions;
+    private static PracticeBuddyBean INSTANCE;
+
+    public static void init(EntityManager em) {
+        INSTANCE = new PracticeBuddyBean(em);
+    }
+
+    public static PracticeBuddyBean getInstance() {
+        return INSTANCE;
+    }
 
     public PracticeBuddyBean(EntityManager em) {
         this.em = em;
@@ -134,6 +143,7 @@ public class PracticeBuddyBean {
     }
 
     public List<Tag> getTags() {
-        return new ArrayList<Tag>(tags);
+        return new ArrayList<>(tags);
     }
+
 }

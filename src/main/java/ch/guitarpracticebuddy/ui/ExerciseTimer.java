@@ -3,52 +3,64 @@ package ch.guitarpracticebuddy.ui;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.util.SoundFile;
 import ch.guitarpracticebuddy.util.SoundUtil;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.util.Duration;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-class ExerciseTimer extends Timer {
+public class ExerciseTimer {
 
     public static final int INTERVAL = 50;
     private final ExerciseDefinition exerciseDefinition;
-    private Timer clickTimer;
+    private Timeline timer;
+    private Timeline bpmTimer;
     private int currentTime = 0;
-    private final PracticeForm practiceForm;
+    private int bpm = 100;
+    private boolean metronomeEnabled = true;
 
-    ExerciseTimer(final PracticeForm practiceForm, final ExerciseDefinition exerciseDefinition) {
-        super(INTERVAL, null);
+    public ExerciseTimer(final ExerciseDefinition exerciseDefinition) {
 
         this.currentTime = exerciseDefinition.getTodaysExercises().getPracticedTime();
         this.exerciseDefinition = exerciseDefinition;
         initBpmTimer();
-        this.practiceForm = practiceForm;
-        this.addActionListener(new TimerActionListener(practiceForm, exerciseDefinition));
+        timer = new Timeline(new KeyFrame(Duration.millis(exerciseDefinition.getClickIntervalInMs()), new TimerActionListener(exerciseDefinition)));
 
     }
 
     private void initBpmTimer() {
-        this.clickTimer = new Timer(exerciseDefinition.getClickIntervalInMs(), new ActionListener() {
+
+        bpmTimer = new Timeline(new KeyFrame(Duration.millis(exerciseDefinition.getClickIntervalInMs()), new EventHandler<ActionEvent>() {
+
             @Override
-            public void actionPerformed(ActionEvent e) {
-                if (practiceForm.isMetronomeEnabled()) {
+            public void handle(ActionEvent event) {
+                if (metronomeEnabled) {
                     SoundUtil.playSound(SoundFile.CLICK);
                 }
-
             }
-        });
+        }));
+        bpmTimer.setCycleCount(Timeline.INDEFINITE);
+
     }
 
-    @Override
+    public void setMetronomeEnabled(boolean metronomeEnabled) {
+        this.metronomeEnabled = metronomeEnabled;
+    }
+
+    public void setBpm(int bpm) {
+        this.bpm = bpm;
+    }
+
     public void start() {
-        super.start();
-        this.clickTimer.start();
+        this.bpmTimer.play();
+        this.timer.play();
     }
 
-    @Override
     public void stop() {
-        super.stop();
-        this.clickTimer.stop();
+
+        this.bpmTimer.stop();
+        this.timer.stop();
         exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
 
     }
@@ -58,61 +70,51 @@ class ExerciseTimer extends Timer {
     }
 
     public void restartBpmTimer() {
-        if (this.clickTimer != null) {
-            this.clickTimer.stop();
+        if (this.bpmTimer != null) {
+            this.bpmTimer.stop();
+
         }
         initBpmTimer();
         if (isRunning()) {
-            clickTimer.start();
+            bpmTimer.play();
         }
     }
 
-    private class TimerActionListener implements ActionListener {
+    public boolean isRunning() {
+        return timer.getStatus() == Animation.Status.RUNNING;
+    }
 
-        private final PracticeForm practiceForm;
+    private class TimerActionListener implements EventHandler<ActionEvent> {
+
         private final ExerciseDefinition exerciseDefinition;
 
-        public TimerActionListener(PracticeForm practiceForm, ExerciseDefinition exerciseDefinition) {
-            this.practiceForm = practiceForm;
+        public TimerActionListener(ExerciseDefinition exerciseDefinition) {
             this.exerciseDefinition = exerciseDefinition;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            updateCurrentState();
-
-            if (hasExerciseChanged()) {
-                ExerciseTimer.this.stop();
-            }
-            if (isTimeUp()) {
-                finishTimer();
-            }
-
         }
 
         private void updateCurrentState() {
             currentTime += INTERVAL;
-            practiceForm.updateProgressBar(currentTime);
             exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
 
-        }
-
-        private boolean hasExerciseChanged() {
-            return practiceForm.getSelectedExercise() != exerciseDefinition;
         }
 
         private void finishTimer() {
 
             SoundUtil.playSound(SoundFile.DONE);
             ExerciseTimer.this.stop();
-            exerciseDefinition.getTodaysExercises().finish(practiceForm.getBpm(), currentTime);
-            practiceForm.selectNextExcercise();
-            practiceForm.resetTimer();
+            exerciseDefinition.getTodaysExercises().finish(bpm, currentTime);
         }
 
         private boolean isTimeUp() {
             return currentTime > exerciseDefinition.getMiliSeconds();
         }
 
+        @Override
+        public void handle(ActionEvent actionEvent) {
+            updateCurrentState();
+            if (isTimeUp()) {
+                finishTimer();
+            }
+        }
     }
 }

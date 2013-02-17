@@ -3,11 +3,10 @@ package ch.guitarpracticebuddy.ui;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeWeek;
 
-import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-class PathExtractor {
+public class PathExtractor {
 
     private boolean userModelIsExcerciseDef;
     private boolean userModelIsPracticeWeek;
@@ -51,7 +50,6 @@ class PathExtractor {
             }
         }
 
-
         userModelIsExcerciseDef = userObject instanceof ExerciseDefinition;
         if (userModelIsExcerciseDef) {
             this.exerciseDefinition = (ExerciseDefinition) userObject;
@@ -65,7 +63,7 @@ class PathExtractor {
 
     private void extractPracticeWeek(DefaultMutableTreeNode lastPathComponent, Object userObject) {
         this.practiceWeek = (PracticeWeek) userObject;
-        this.practiceWeekNode =  lastPathComponent;
+        this.practiceWeekNode = lastPathComponent;
     }
 
     public PracticeWeek getPracticeWeek() {

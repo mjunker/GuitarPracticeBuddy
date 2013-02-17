@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<GridPane hgap="0.0" prefHeight="475.0" prefWidth="462.0" vgap="5.0" xmlns:fx="http://javafx.com/fxml" fx:controller="ch.guitarpracticebuddy.javafx.ExerciseDefinitionFormController">
+  <children>
+    <Label text="Title" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.valignment="TOP">
+      <GridPane.margin>
+        <Insets top="5.0" fx:id="x1" />
+      </GridPane.margin>
+    </Label>
+    <Label text="Description" GridPane.columnIndex="0" GridPane.margin="$x1" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+    <Label text="Minutes" GridPane.columnIndex="0" GridPane.margin="$x1" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+    <Label text="Bpm" GridPane.columnIndex="0" GridPane.margin="$x1" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+    <Label text="Files" GridPane.columnIndex="0" GridPane.margin="$x1" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+    <Label text="Rating" GridPane.columnIndex="0" GridPane.margin="$x1" GridPane.rowIndex="6" GridPane.valignment="TOP" />
+    <TextField fx:id="titleField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <TextArea fx:id="descriptionField" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <TextField fx:id="minutesField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <TextField fx:id="bpmField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <TextArea id="filesField" fx:id="imageContentFilesField" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <ChoiceBox fx:id="ratingField" prefWidth="599.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="NEVER">
+      <items>
+        <FXCollections fx:factory="observableArrayList">
+          <String fx:value="Item 1" />
+          <String fx:value="Item 2" />
+          <String fx:value="Item 3" />
+        </FXCollections>
+      </items>
+    </ChoiceBox>
+    <Label text="Tags" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+    <ListView id="tagsField" fx:id="tagField" prefHeight="-1.0" prefWidth="492.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="175.0" minWidth="10.0" prefWidth="83.0" />
+    <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="-1.0" minWidth="10.0" prefWidth="270.0" />
+  </columnConstraints>
+  <padding>
+    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints maxHeight="24.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="25.0" minHeight="0.0" prefHeight="25.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="132.0" minHeight="10.0" prefHeight="90.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="153.0" minHeight="0.0" prefHeight="142.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="25.0" minHeight="0.0" prefHeight="25.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+</GridPane>

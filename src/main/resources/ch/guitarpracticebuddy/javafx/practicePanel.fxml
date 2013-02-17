@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<VBox id="VBox" alignment="CENTER" spacing="5.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="ch.guitarpracticebuddy.javafx.PracticeController">
+    <children>
+        <BorderPane prefHeight="629.0" prefWidth="1034.0" VBox.vgrow="ALWAYS">
+            <center>
+                <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="601.0"
+                      prefWidth="386.0"/>
+            </center>
+            <left>
+                <VBox id="VBox" alignment="CENTER" prefHeight="-1.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
+                    <children>
+                        <AnchorPane prefHeight="101.0" prefWidth="200.0">
+                            <children>
+                                <ProgressIndicator fx:id="progressBar" layoutX="0.0" layoutY="33.0" prefHeight="54.0"
+                                                   prefWidth="57.0" progress="0.0"/>
+                                <HBox alignment="CENTER" layoutX="0.0" layoutY="0.0" prefHeight="27.0" prefWidth="200.0"
+                                      spacing="5.0">
+                                    <children>
+                                        <Button id="playButton" fx:id="startButton" maxWidth="1.7976931348623157E308"
+                                                minWidth="-Infinity" mnemonicParsing="false" prefWidth="60.0"
+                                                text="Play" HBox.hgrow="NEVER"/>
+                                        <Button fx:id="skipButton" maxWidth="-Infinity" minWidth="-Infinity"
+                                                mnemonicParsing="false" prefWidth="60.0" text="Skip"
+                                                HBox.hgrow="NEVER"/>
+                                        <Button fx:id="resetButton" maxWidth="-Infinity" minWidth="-Infinity"
+                                                mnemonicParsing="false" prefWidth="60.0" text="Reset"
+                                                HBox.hgrow="NEVER">
+                                            <HBox.margin>
+                                                <Insets/>
+                                            </HBox.margin>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                                <Slider fx:id="bpmSlider" layoutX="57.0" layoutY="35.0" prefWidth="90.0"/>
+                                <Label fx:id="bpmLabel" layoutX="154.0" layoutY="35.0" text="Label"
+                                       textAlignment="RIGHT"/>
+                                <ChoiceBox fx:id="ratingBox" layoutX="57.0" layoutY="60.0" prefWidth="129.0">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="Item 1"/>
+                                            <String fx:value="Item 2"/>
+                                            <String fx:value="Item 3"/>
+                                        </FXCollections>
+                                    </items>
+                                </ChoiceBox>
+                            </children>
+                        </AnchorPane>
+                        <ListView fx:id="currentExercisesTable" prefHeight="200.0" prefWidth="200.0"
+                                  VBox.vgrow="ALWAYS"/>
+                    </children>
+                </VBox>
+            </left>
+        </BorderPane>
+    </children>
+</VBox>

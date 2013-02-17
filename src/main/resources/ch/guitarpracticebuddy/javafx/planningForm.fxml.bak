@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<VBox prefHeight="798.0" prefWidth="1016.0" xmlns:fx="http://javafx.com/fxml" fx:controller="ch.guitarpracticebuddy.javafx.PlanningController">
+  <children>
+    <HBox prefHeight="555.0" prefWidth="529.0" VBox.vgrow="ALWAYS">
+      <children>
+        <VBox id="VBox" alignment="CENTER" spacing="5.0">
+          <children>
+            <ChoiceBox fx:id="ratingFilter" prefWidth="270.0" VBox.vgrow="NEVER">
+              <items>
+                <FXCollections fx:factory="observableArrayList">
+                  <String fx:value="Item 1" />
+                  <String fx:value="Item 2" />
+                  <String fx:value="Item 3" />
+                </FXCollections>
+              </items>
+              <VBox.margin>
+                <Insets top="10.0" />
+              </VBox.margin>
+            </ChoiceBox>
+            <FlowPane fx:id="tagPanel" prefHeight="86.0" prefWidth="297.0" VBox.vgrow="SOMETIMES" />
+            <TreeView fx:id="planningTree" prefHeight="555.0" prefWidth="304.0" VBox.vgrow="ALWAYS">
+              <VBox.margin>
+                <Insets left="10.0" right="5.0" />
+              </VBox.margin>
+            </TreeView>
+          </children>
+        </VBox>
+        <VBox prefHeight="424.0" prefWidth="373.0" HBox.hgrow="ALWAYS">
+          <children>
+            <Pane fx:id="formPanel" prefHeight="490.0" prefWidth="677.0" />
+            <TableView id="weekOvervie" fx:id="weekOverview" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+          </children>
+          <HBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+          </HBox.margin>
+        </VBox>
+      </children>
+    </HBox>
+  </children>
+</VBox>

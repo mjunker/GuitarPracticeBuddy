@@ -116,6 +116,10 @@ public class ExerciseDefinition {
         this.tags = tags;
     }
 
+    public int getTargetBpm() {
+        return this.bpm;
+    }
+
     private static class IsNotInFuture extends BaseMatcher<DateTime> {
         @Override
         public boolean matches(Object o) {
