@@ -14,6 +14,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
@@ -109,9 +113,7 @@ public class PlanningController implements Initializable {
     private void updateTagPanel() {
         tagPanel.getChildren().clear();
         for (final Tag tag : practiceBuddyBean.getTags()) {
-            final ToggleButton tagButton = new ToggleButton();
-            tagButton.setText(tag.getName());
-            tagButton.setId("tagButton");
+            final ToggleButton tagButton = new TagButton(tag);
             tagButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
@@ -147,5 +149,33 @@ public class PlanningController implements Initializable {
 
     public void refresh() {
         //To change body of created methods use File | Settings | File Templates.
+    }
+
+    public static class TagButton extends ToggleButton {
+        private Tag tag;
+
+        private TagButton(Tag tag) {
+            this.tag = tag;
+            setText(tag.getName());
+            setId("tagButton");
+            getStyleClass().add("tag");
+
+            setOnDragDetected(new EventHandler<MouseEvent>() {
+                public void handle(MouseEvent event) {
+
+                    Dragboard db = startDragAndDrop(TransferMode.COPY);
+
+                    ClipboardContent content = new ClipboardContent();
+                    content.putString(getText());
+                    db.setContent(content);
+
+                    event.consume();
+                }
+            });
+        }
+
+        public Tag getTag() {
+            return tag;
+        }
     }
 }

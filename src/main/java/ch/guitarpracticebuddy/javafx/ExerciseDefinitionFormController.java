@@ -1,18 +1,22 @@
 package ch.guitarpracticebuddy.javafx;
 
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
-import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.Rating;
 import ch.guitarpracticebuddy.domain.Tag;
 import ch.guitarpracticebuddy.util.FileUtil;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -36,22 +40,21 @@ public class ExerciseDefinitionFormController implements Initializable {
     @FXML
     private TextArea filesField;
     @FXML
-    private ListView tagField;
-    @FXML
     private ChoiceBox ratingField;
     @FXML
     private Button selectFilesButton;
     @FXML
     private Button previewButton;
-    private PracticeBuddyBean practiceBuddyBean;
+    @FXML
+    private FlowPane tagPanel;
     private ExerciseDefinition exerciseDefinition;
+    private ObservableList<Tag> selectedTags = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        practiceBuddyBean = PracticeBuddyBean.getInstance();
         ratingField.setItems(FXCollections.observableArrayList(Rating.values()));
-        initTagField();
+        initDropListener();
 
         selectFilesButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
@@ -67,24 +70,12 @@ public class ExerciseDefinitionFormController implements Initializable {
         });
     }
 
-    private void initTagField() {
-        tagField.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tagField.setItems(FXCollections.observableArrayList(PracticeBuddyBean.getInstance().getTags()));
-
-        tagField.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object o2) {
-                if (exerciseDefinition != null) {
-                    exerciseDefinition.setTags(tagField.getSelectionModel().getSelectedItems());
-                }
-            }
-        });
-
-    }
-
     public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {
         bindFields(this.exerciseDefinition, exerciseDefinition);
         this.exerciseDefinition = exerciseDefinition;
+        if (this.exerciseDefinition != null) {
+            selectedTags.addAll(this.exerciseDefinition.getTags());
+        }
 
     }
 
@@ -94,7 +85,8 @@ public class ExerciseDefinitionFormController implements Initializable {
             unbind(oldValue);
         }
         this.exerciseDefinition = null;
-        updateTags(newValue);
+        selectedTags.clear();
+
         if (newValue != null) {
             bind(newValue);
         }
@@ -119,33 +111,90 @@ public class ExerciseDefinitionFormController implements Initializable {
         Bindings.bindBidirectional(ratingField.valueProperty(), newValue.ratingProperty());
     }
 
-    private int[] getIndices(List<Tag> tags) {
-        List<Integer> indices = new ArrayList<>();
-        for (Tag tag : tags) {
-            indices.add(tagField.getItems().indexOf(tag));
-        }
+    private void initDropListener() {
 
-        return toIntArray(indices);
+        tagPanel.setOnDragOver(new EventHandler<DragEvent>() {
+            public void handle(DragEvent dragEvent) {
+
+                Object gestureSource = dragEvent.getGestureSource();
+                if (gestureSource instanceof PlanningController.TagButton) {
+                    PlanningController.TagButton tagButton = (PlanningController.TagButton) gestureSource;
+                    if (!selectedTags.contains(tagButton.getTag())) {
+                        dragEvent.acceptTransferModes(TransferMode.COPY);
+                        dragEvent.consume();
+                    }
+
+                }
+
+            }
+        });
+
+        tagPanel.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent dragEvent) {
+                Object gestureSource = dragEvent.getGestureSource();
+                if (gestureSource instanceof PlanningController.TagButton) {
+
+                    PlanningController.TagButton tagButton = ((PlanningController.TagButton) gestureSource);
+                    selectedTags.add(tagButton.getTag());
+                    dragEvent.setDropCompleted(true);
+
+                }
+
+            }
+        });
+
+        selectedTags.addListener(new ListChangeListener<Tag>() {
+            @Override
+            public void onChanged(Change<? extends Tag> change) {
+
+                if (exerciseDefinition != null) {
+                    exerciseDefinition.setTags(new ArrayList<>(selectedTags));
+
+                }
+
+                while (change.next()) {
+                    if (change.wasAdded()) {
+                        for (Tag tag : change.getAddedSubList()) {
+                            tagPanel.getChildren().add(new TagLabel(tag));
+                        }
+                    }
+
+                    if (change.wasRemoved()) {
+                        for (Node node : new ArrayList<>(tagPanel.getChildren())) {
+                            TagLabel tagLabel = (TagLabel) node;
+                            if (change.getRemoved().contains(tagLabel.getTag())) {
+                                tagPanel.getChildren().remove(tagLabel);
+                            }
+                        }
+
+                    }
+                }
+
+            }
+        });
     }
 
-    private int[] toIntArray(List<Integer> indices) {
+    private class TagLabel extends Label {
+        private Tag tag;
 
-        int[] intArr = new int[indices.size()];
-        for (Integer index : indices) {
-            intArr[indices.indexOf(index)] = index;
+        private TagLabel(final Tag tag) {
+            super(tag.getName());
+            this.tag = tag;
+            getStyleClass().add("tag");
+
+            setOnDragDetected(new EventHandler<MouseEvent>() {
+                public void handle(MouseEvent event) {
+                    selectedTags.remove(tag);
+                    event.consume();
+                }
+            });
+
         }
-        return intArr;
-    }
 
-    private void updateTags(ExerciseDefinition exerciseDefinition) {
-
-        this.tagField.getSelectionModel().clearSelection();
-        if (exerciseDefinition != null && !exerciseDefinition.getTags().isEmpty()) {
-            int[] selectedIndices = getIndices(exerciseDefinition.getTags());
-            this.tagField.getSelectionModel().selectIndices(selectedIndices[0], selectedIndices);
+        public Tag getTag() {
+            return tag;
         }
-
     }
-
 
 }

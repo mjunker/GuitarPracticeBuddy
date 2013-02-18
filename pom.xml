@@ -72,21 +72,11 @@
             <artifactId>guava</artifactId>
             <version>14.0-rc1</version>
         </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>forms_rt</artifactId>
-            <version>5.0</version>
-        </dependency>
+
         <dependency>
             <groupId>org.jfxtras</groupId>
             <artifactId>jfxtras-labs</artifactId>
             <version>2.2-r5-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.0.6.RELEASE</version>
         </dependency>
 
 
@@ -105,23 +95,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>ideauidesigner-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>javac2</goal>
-                        </goals>
-                    </execution>
-                </executions>
 
-                <configuration>
-                    <fork>true</fork>
-                    <debug>true</debug>
-                    <failOnError>true</failOnError>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

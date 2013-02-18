@@ -40,5 +40,12 @@
     -fx-progress-color: #4cb42f
 }
 
+.tag {
+    -fx-border-radius: 10;
+    -fx-padding: 2 5;
+    -fx-border-style: solid;
+    -fx-border-color: gray;
+
+}
 
 
