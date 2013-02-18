@@ -1,5 +1,7 @@
 package ch.guitarpracticebuddy.javafx;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -23,14 +25,29 @@ public class GuitarBuddyController implements Initializable {
     @FXML
     private Tab planningContent;
 
+    private PlanningController planningController;
+    private PracticeController practiceFormController;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        Parent root = new FxmlLoader().load("practicePanel.fxml");
+        FxmlLoader practicePaneLoader = new FxmlLoader();
+        Parent root = practicePaneLoader.load("practicePanel.fxml");
         practicingContent.setContent(root);
+        practiceFormController = practicePaneLoader.getFxmlLoader().getController();
 
-        Parent planningRoot = new FxmlLoader().load("planningForm.fxml");
+        FxmlLoader planningPaneLoader = new FxmlLoader();
+        Parent planningRoot = planningPaneLoader.load("planningForm.fxml");
+        planningController = planningPaneLoader.getFxmlLoader().getController();
         planningContent.setContent(planningRoot);
+
+        practicingContent.setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                planningController.refresh();
+                practiceFormController.refresh();
+            }
+        });
 
     }
 }

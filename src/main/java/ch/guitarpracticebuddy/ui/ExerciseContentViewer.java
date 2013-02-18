@@ -76,7 +76,7 @@ public class ExerciseContentViewer {
         if (currentAttachment != null) {
             try {
                 BufferedImage image = ImageIO.read(FileUtil.toFiles(exerciseDefinition, currentAttachment));
-                ImageIcon imageIcon = new ImageIcon(FileUtil.scaleImage(image));
+                ImageIcon imageIcon = new ImageIcon(image);
                 contentLabel.setIcon(imageIcon);
             } catch (IOException e) {
             }
@@ -88,7 +88,7 @@ public class ExerciseContentViewer {
 
     private List<ExerciseAttachment> getAttachments() {
         if (exerciseDefinition == null) {
-            return new ArrayList<ExerciseAttachment>();
+            return new ArrayList<>();
         }
         return exerciseDefinition.getAttachments();
     }

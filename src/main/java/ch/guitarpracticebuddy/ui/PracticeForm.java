@@ -187,7 +187,7 @@ public class PracticeForm {
 
     private void initTimerIfNecessary() {
         if (timer == null || !timer.getExerciseDefinition().equals(selectedExercise)) {
-            timer = new ExerciseTimer(selectedExercise);
+            timer = new ExerciseTimer(selectedExercise, null);
             initProgressBar();
         }
     }

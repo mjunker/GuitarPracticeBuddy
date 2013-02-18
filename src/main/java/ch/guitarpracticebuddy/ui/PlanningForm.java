@@ -2,8 +2,6 @@ package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.*;
 import ch.guitarpracticebuddy.util.Constants;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.joda.time.LocalDate;
 
@@ -17,9 +15,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ch.lambdaj.Lambda.collect;
-import static ch.lambdaj.Lambda.on;
 
 public class PlanningForm {
 
@@ -104,8 +99,8 @@ public class PlanningForm {
     }
 
     private void appendFiles(File[] selectedFiles, ExerciseDefinition exerciseDefinition) {
-        List<String> relativePaths = FileUtil.copyFilesToApplicationHome(selectedFiles, exerciseDefinition);
-        filesTextBox.setText(createAttachmentText(relativePaths));
+        //List<String> relativePaths = FileUtil.copyFilesToApplicationHome(selectedFiles, exerciseDefinition);
+        //filesTextBox.setText(ExerciseDefinition.createAttachmentString(relativePaths));
 
     }
 
@@ -221,7 +216,7 @@ public class PlanningForm {
             titleField.setText(data.getTitle());
             durationField.setText(Integer.valueOf(data.getMinutes()).toString());
             bpmField.setText(Integer.valueOf(data.getBpm()).toString());
-            filesTextBox.setText(createAttachmentText(collect(data.getAttachments(), on(ExerciseAttachment.class).getFilePath())));
+            filesTextBox.setText(data.getAttachmentsAsString());
             codeField.setText(data.getCode());
             ratingSlider.setValue(data.getRating().getLevel());
         } else {
@@ -257,12 +252,6 @@ public class PlanningForm {
         return intArr;
     }
 
-    private String createAttachmentText(List<String> filePaths) {
-        return Joiner.on("\n")
-                .skipNulls()
-                .join(filePaths);
-    }
-
     public void getData(ExerciseDefinition data) {
 
         if (data != null) {
@@ -276,20 +265,11 @@ public class PlanningForm {
                 data.setBpm(Integer.parseInt(bpmField.getText()));
             }
             data.setTags(convertTags(tagList.getSelectedValues()));
-            data.setAttachments(createAttachments());
+            data.setAttachmentsAsString(filesTextBox.getText());
             data.setCode(codeField.getText());
             data.setRating(Rating.fromValue(ratingSlider.getValue()));
         }
 
-    }
-
-    private List<ExerciseAttachment> createAttachments() {
-        List<ExerciseAttachment> attachments = new ArrayList<ExerciseAttachment>();
-
-        for (String filePath : Splitter.on("\n").omitEmptyStrings().split(filesTextBox.getText())) {
-            attachments.add(new ExerciseAttachment(filePath));
-        }
-        return attachments;
     }
 
     private List<Tag> convertTags(Object[] selectedValues) {
@@ -317,7 +297,6 @@ public class PlanningForm {
             tagButton.setOpaque(false);
             updateTagState(tag, tagButton);
             tagButton.setMargin(new Insets(0, 0, 0, 0));
-
 
             tagButton.addActionListener(new ActionListener() {
                 @Override
@@ -420,7 +399,6 @@ public class PlanningForm {
     private void updateTags() {
 
         updateTagPanel();
-
 
         if (selectedExerciseDef != null) {
             List<Tag> tags = this.practiceBuddyBean.getTags();

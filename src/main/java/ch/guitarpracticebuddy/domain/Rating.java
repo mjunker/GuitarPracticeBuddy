@@ -9,7 +9,7 @@ package ch.guitarpracticebuddy.domain;
  */
 public enum Rating {
 
-    PERFECT(3), GOOD(2), ADVANCING(1), HARD(0);
+    MASTER(3), GOOD(2), ADVANCING(1), BEGINNER(0);
 
     private final int level;
 

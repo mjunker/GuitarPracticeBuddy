@@ -2,21 +2,23 @@ package ch.guitarpracticebuddy.javafx;
 
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.ui.ExerciseTimer;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.input.MouseEvent;
 
 public class TimerController {
 
     private ButtonBase startButton;
     private ExerciseTimer timer;
     private ExerciseDefinition exerciseDefinition;
+    private final PracticeController practiceController;
 
-    public TimerController(ButtonBase startButton) {
+    public TimerController(ButtonBase startButton, PracticeController practiceController) {
         this.startButton = startButton;
-        this.startButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        this.practiceController = practiceController;
+        this.startButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(MouseEvent actionEvent) {
+            public void handle(ActionEvent actionEvent) {
                 toggleTimer();
             }
         });
@@ -26,6 +28,14 @@ public class TimerController {
         if (this.timer != null) {
             this.timer.restartBpmTimer();
         }
+    }
+
+    public void resetTimer() {
+        if (this.timer != null) {
+
+            this.timer.stop();
+        }
+        this.timer = null;
     }
 
     private void toggleTimer() {
@@ -60,8 +70,11 @@ public class TimerController {
     }
 
     public void initTimerIfNecessary() {
-        if (timer == null || !timer.getExerciseDefinition().equals(exerciseDefinition)) {
-            timer = new ExerciseTimer(exerciseDefinition);
+        if (exerciseDefinition != null && (timer == null
+                || !timer.getExerciseDefinition().equals(exerciseDefinition))) {
+            timer = new ExerciseTimer(exerciseDefinition, practiceController);
+
         }
     }
+
 }

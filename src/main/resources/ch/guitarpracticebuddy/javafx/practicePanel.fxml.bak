@@ -12,7 +12,11 @@
   <children>
     <BorderPane prefHeight="629.0" prefWidth="1034.0" VBox.vgrow="ALWAYS">
       <center>
-        <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="601.0" prefWidth="386.0" />
+        <VBox fx:id="practiceContentPanel" prefHeight="200.0" prefWidth="100.0" spacing="0.0" BorderPane.alignment="CENTER">
+          <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+          </BorderPane.margin>
+        </VBox>
       </center>
       <left>
         <VBox id="VBox" alignment="CENTER" prefHeight="-1.0" spacing="5.0" BorderPane.alignment="TOP_LEFT">
@@ -22,7 +26,7 @@
                 <ProgressIndicator fx:id="progressBar" layoutX="0.0" layoutY="33.0" prefHeight="54.0" prefWidth="57.0" progress="0.0" />
                 <HBox alignment="CENTER" layoutX="0.0" layoutY="0.0" prefHeight="27.0" prefWidth="200.0" spacing="5.0">
                   <children>
-                    <ToggleButton fx:id="startButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="60.0" text="Play" />
+                    <Button id="playButton" fx:id="startButton" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" prefWidth="60.0" text="Play" HBox.hgrow="NEVER" />
                     <Button fx:id="skipButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="60.0" text="Skip" HBox.hgrow="NEVER" />
                     <Button fx:id="resetButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="60.0" text="Reset" HBox.hgrow="NEVER">
                       <HBox.margin>

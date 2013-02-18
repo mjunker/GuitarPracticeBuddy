@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import ch.guitarpracticebuddy.javafx.PracticeController;
 import ch.guitarpracticebuddy.util.SoundFile;
 import ch.guitarpracticebuddy.util.SoundUtil;
 import javafx.animation.Animation;
@@ -19,13 +20,16 @@ public class ExerciseTimer {
     private int currentTime = 0;
     private int bpm = 100;
     private boolean metronomeEnabled = true;
+    private final PracticeController practiceController;
 
-    public ExerciseTimer(final ExerciseDefinition exerciseDefinition) {
+    public ExerciseTimer(final ExerciseDefinition exerciseDefinition, PracticeController practiceController) {
 
+        this.practiceController = practiceController;
         this.currentTime = exerciseDefinition.getTodaysExercises().getPracticedTime();
         this.exerciseDefinition = exerciseDefinition;
         initBpmTimer();
-        timer = new Timeline(new KeyFrame(Duration.millis(exerciseDefinition.getClickIntervalInMs()), new TimerActionListener(exerciseDefinition)));
+        timer = new Timeline(new KeyFrame(Duration.millis(INTERVAL), new TimerActionListener(exerciseDefinition)));
+        timer.setCycleCount(Timeline.INDEFINITE);
 
     }
 
@@ -44,14 +48,6 @@ public class ExerciseTimer {
 
     }
 
-    public void setMetronomeEnabled(boolean metronomeEnabled) {
-        this.metronomeEnabled = metronomeEnabled;
-    }
-
-    public void setBpm(int bpm) {
-        this.bpm = bpm;
-    }
-
     public void start() {
         this.bpmTimer.play();
         this.timer.play();
@@ -61,7 +57,6 @@ public class ExerciseTimer {
 
         this.bpmTimer.stop();
         this.timer.stop();
-        exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
 
     }
 
@@ -95,6 +90,7 @@ public class ExerciseTimer {
         private void updateCurrentState() {
             currentTime += INTERVAL;
             exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
+            practiceController.refreshProgress();
 
         }
 
@@ -103,6 +99,7 @@ public class ExerciseTimer {
             SoundUtil.playSound(SoundFile.DONE);
             ExerciseTimer.this.stop();
             exerciseDefinition.getTodaysExercises().finish(bpm, currentTime);
+            practiceController.refresh();
         }
 
         private boolean isTimeUp() {

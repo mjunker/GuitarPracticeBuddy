@@ -2,12 +2,12 @@ package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.ExerciseAttachment;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import com.google.common.io.Closeables;
 import com.google.common.io.Files;
+import javafx.scene.image.Image;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +16,8 @@ public class FileUtil {
 
     public static final String SEPARATOR = "/";
     public static final String EXERCISE_FOLDER_PREFIX = "exercise_data/exercise_";
-    private static final int DEFAULT_IMAGE_WIDTH = 800;
 
-    public static List<String> copyFilesToApplicationHome(File[] selectedFiles, ExerciseDefinition exerciseDefinition) {
+    public static List<String> copyFilesToApplicationHome(List<File> selectedFiles, ExerciseDefinition exerciseDefinition) {
         List<String> fileNames = new ArrayList<String>();
         for (File selectedFile : selectedFiles) {
             try {
@@ -35,18 +34,7 @@ public class FileUtil {
     }
 
     private static void scaleImageInNewThread(final File destination) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    BufferedImage read = ImageIO.read(destination);
-                    ImageIO.write(scaleImage(read), "jpg", destination);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        new Thread(runnable).start();
+
     }
 
     private static String getExerciseDirectoryAbsolute(ExerciseDefinition exerciseDefinition) {
@@ -65,26 +53,23 @@ public class FileUtil {
         return new File(getExerciseDirectoryAbsolute(exerciseDefinition) + exerciseAttachment.getFilePath());
     }
 
-    public static BufferedImage scaleImage(BufferedImage image) {
-        if (image.getWidth() == DEFAULT_IMAGE_WIDTH) {
+    public static Image loadImage(ExerciseDefinition exerciseDefinition, ExerciseAttachment exerciseAttachment) {
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(toFiles(exerciseDefinition, exerciseAttachment));
+            Image image = new Image(fileInputStream);
             return image;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                Closeables.close(fileInputStream, true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
 
-        int actualWidth = Math.min(DEFAULT_IMAGE_WIDTH, image.getWidth());
-        float scale = ((float) actualWidth) / image.getWidth();
-
-        Image scaledInstance = image.getScaledInstance(actualWidth,
-                (int) (image.getHeight() * scale), Image.SCALE_SMOOTH);
-
-        BufferedImage bi = new BufferedImage(scaledInstance.getWidth(null),
-                scaledInstance.getHeight(null),
-                image.getType());
-
-        Graphics2D grph = (Graphics2D) bi.getGraphics();
-
-        grph.drawImage(scaledInstance, 0, 0, null);
-        grph.dispose();
-
-        return bi;
     }
+
 }

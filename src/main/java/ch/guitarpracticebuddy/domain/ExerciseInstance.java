@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.Interval;
@@ -8,6 +9,7 @@ import org.joda.time.Interval;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class ExerciseInstance {
@@ -20,6 +22,10 @@ public class ExerciseInstance {
     private ExerciseStatus status = ExerciseStatus.PLANNED;
     private int actualBpm;
     private int practicedTime;
+
+    @ManyToOne
+    @Setter
+    private ExerciseDefinition exerciseDefinition;
 
     public ExerciseInstance(DateTime day) {
         this.day = day;
@@ -80,5 +86,20 @@ public class ExerciseInstance {
     public void setBpm(int bpm) {
         this.actualBpm = bpm;
 
+    }
+
+    public double getBpmAsDouble() {
+        return this.getBpm();
+    }
+
+    public void setBpmAsDouble(double bpm) {
+        this.actualBpm = (int) bpm;
+    }
+
+    public double getPracticeTimeProgress() {
+        return ((float) practicedTime) / exerciseDefinition.getMiliSeconds();
+    }
+
+    public void setPracticeTimeProgress(double progress) {
     }
 }

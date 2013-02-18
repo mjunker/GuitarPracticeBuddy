@@ -1,5 +1,7 @@
 package ch.guitarpracticebuddy.domain;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
 import org.hamcrest.BaseMatcher;
@@ -22,34 +24,31 @@ public class ExerciseDefinition {
     @Id
     @GeneratedValue
     private int id;
-
     @Setter
     private String code;
-
     @Setter
     private String title = "New exercise";
-
     @Setter
     private String description;
-
     @Setter
     private int minutes;
-
     @Setter
     private int bpm;
-
     @Setter
-    private Rating rating = Rating.HARD;
-
-    private List<Tag> tags = new ArrayList<Tag>();
-
+    private Rating rating = Rating.BEGINNER;
+    private List<Tag> tags = new ArrayList<>();
     @Setter
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<ExerciseAttachment> attachments = new ArrayList<ExerciseAttachment>();
-
+    private List<ExerciseAttachment> attachments = new ArrayList<>();
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<ExerciseInstance> plannedInstances = new ArrayList<ExerciseInstance>();
-    private List<ExerciseInstance> pastInstances = new ArrayList<ExerciseInstance>();
+    private List<ExerciseInstance> plannedInstances = new ArrayList<>();
+    private List<ExerciseInstance> pastInstances = new ArrayList<>();
+
+    public static String createAttachmentString(List<String> paths) {
+        return Joiner.on("\n")
+                .skipNulls()
+                .join(paths);
+    }
 
     public ExerciseInstance getTodaysExercises() {
         return selectFirst(plannedInstances,
@@ -59,6 +58,7 @@ public class ExerciseDefinition {
     public void createInstancesForEntireWeek(Interval interval) {
         for (LocalDate localDate : new LocalDateRange(interval)) {
             ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
+            instance.setExerciseDefinition(this);
             plannedInstances.add(instance);
         }
     }
@@ -120,6 +120,38 @@ public class ExerciseDefinition {
         return this.bpm;
     }
 
+    public void setTargetBpm(int bpm) {
+        this.bpm = bpm;
+    }
+
+    public double getTargetBpmAsDouble() {
+        return this.bpm;
+    }
+
+    public void setTargetBpmAsDouble(double bpm) {
+        this.bpm = (int) bpm;
+    }
+
+    public Rating getRating() {
+        if (rating == null) {
+            return Rating.BEGINNER;
+        }
+        return rating;
+    }
+
+    public String getAttachmentsAsString() {
+        return createAttachmentString(collect(getAttachments(), on(ExerciseAttachment.class).getFilePath()));
+    }
+
+    public void setAttachmentsAsString(String content) {
+        List<ExerciseAttachment> attachments = new ArrayList<>();
+
+        for (String filePath : Splitter.on("\n").omitEmptyStrings().split(content)) {
+            attachments.add(new ExerciseAttachment(filePath));
+        }
+        setAttachments(attachments);
+    }
+
     private static class IsNotInFuture extends BaseMatcher<DateTime> {
         @Override
         public boolean matches(Object o) {
@@ -131,12 +163,5 @@ public class ExerciseDefinition {
         public void describeTo(Description description) {
             //To change body of implemented methods use File | Settings | File Templates.
         }
-    }
-
-    public Rating getRating() {
-        if (rating == null) {
-            return Rating.HARD;
-        }
-        return rating;
     }
 }

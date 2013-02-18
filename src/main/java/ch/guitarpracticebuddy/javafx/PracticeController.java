@@ -1,26 +1,32 @@
 package ch.guitarpracticebuddy.javafx;
 
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import ch.guitarpracticebuddy.domain.ExerciseInstance;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.Rating;
+import ch.guitarpracticebuddy.ui.FileUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import jfxtras.labs.scene.control.BeanPathAdapter;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PracticeController implements Initializable {
 
-    public static final ObservableList<ExerciseDefinition> data =
-            FXCollections.observableArrayList();
+    public static final int IMAGE_WIDTH = 1100;
     @FXML
     private ProgressIndicator progressBar;
     @FXML
@@ -39,48 +45,61 @@ public class PracticeController implements Initializable {
     private Button resetButton;
     @FXML
     private Button startButton;
-
+    @FXML
+    private VBox practiceContentPanel;
     private TimerController timerController;
-
-    private void initProgressBar() {
-        //To change body of created methods use File | Settings | File Templates.
-    }
+    private BeanPathAdapter<ExerciseDefinition> beanPathAdapter;
+    private BeanPathAdapter<ExerciseInstance> exerciseBeanPathAdapter;
+    private ExerciseInstance exerciseInstance;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        initCurrentExercises();
         initRatingBox();
-        initButtons();
         initTimerController();
-        initBpm();
-
-        addListeners();
-
-        // currentEx.setCellFactory(new PropertyValueFactory<ExerciseDefinition, String>("title"));
+        initCurrentExercises();
 
     }
 
-    private void addListeners() {
-        this.bpmSlider.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                setBpm((int) bpmSlider.getValue());
-            }
-        });
+    private void initPracticeContent() {
+        practiceContentPanel.getChildren().clear();
+        if (exerciseDefinition != null) {
+
+            ScrollPane scrollPane = new ScrollPane();
+
+            scrollPane.setFitToHeight(true);
+            scrollPane.setFitToWidth(true);
+
+            final Pagination pagination = PaginationBuilder.create().pageCount(exerciseDefinition.getAttachments().size()).pageFactory(new Callback<Integer, Node>() {
+                @Override
+                public Node call(Integer pageIndex) {
+
+                    VBox box = new VBox();
+                    Image image = FileUtil.loadImage(exerciseDefinition, exerciseDefinition.getAttachments().get(pageIndex));
+                    ImageView iv = new ImageView(image);
+                    iv.setPreserveRatio(true);
+                    iv.setFitHeight(IMAGE_WIDTH);
+                    box.setAlignment(Pos.CENTER);
+                    box.getChildren().add(iv);
+                    return box;
+                }
+            }).build();
+            pagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+            VBox.setVgrow(scrollPane, Priority.ALWAYS);
+            scrollPane.setContent(pagination);
+
+            practiceContentPanel.getChildren().add(scrollPane);
+        }
+
     }
 
     private void initTimerController() {
-        this.timerController = new TimerController(startButton);
-    }
-
-    private void initButtons() {
-
+        this.timerController = new TimerController(startButton, this);
     }
 
     private void initCurrentExercises() {
-        data.addAll(PracticeBuddyBean.getInstance().getExcercisesForToday());
-        currentExercisesTable.setItems(data);
+        ObservableList<ExerciseDefinition> exerciseDefinitions = FXCollections.observableArrayList(PracticeBuddyBean.getInstance().getExcercisesForToday());
+        currentExercisesTable.setItems(exerciseDefinitions);
         currentExercisesTable.setEditable(false);
         currentExercisesTable.setCellFactory(new Callback<ListView<ExerciseDefinition>, ListCell<ExerciseDefinition>>() {
 
@@ -104,6 +123,10 @@ public class PracticeController implements Initializable {
                 select(exerciseDefinition2);
             }
         });
+
+        if (!exerciseDefinitions.isEmpty()) {
+            select(exerciseDefinitions.get(0));
+        }
     }
 
     private void initRatingBox() {
@@ -111,42 +134,58 @@ public class PracticeController implements Initializable {
     }
 
     private void select(ExerciseDefinition exerciseDefinition) {
-        if (exerciseDefinition == this.exerciseDefinition && this.exerciseDefinition != null)
-            return;
-
         this.exerciseDefinition = exerciseDefinition;
-        initRating();
-        initBpm();
-        this.timerController.setExerciseDefinition(exerciseDefinition);
-    }
-
-    private void initRating() {
         if (this.exerciseDefinition != null) {
-            ratingBox.getSelectionModel().select(this.exerciseDefinition.getRating());
-        }
-    }
-
-    private void initBpm() {
-
-        if (this.exerciseDefinition != null) {
-            bpmSlider.setMax(this.exerciseDefinition.getTargetBpm());
-            bpmSlider.setValue(this.exerciseDefinition.getBpm());
-            setBpm(this.exerciseDefinition.getBpm());
+            this.exerciseInstance = exerciseDefinition.getTodaysExercises();
 
         } else {
-            bpmSlider.setMax(0);
-            bpmSlider.setValue(0);
-            bpmLabel.setText("");
+            this.exerciseInstance = null;
         }
+        initPracticeContent();
+        updateTimerController();
+        refreshProgress();
 
+        if (this.exerciseInstance != null) {
+            initBeanAdapter();
+
+        } else {
+            this.timerController.resetTimer();
+        }
     }
 
-    private void setBpm(int bpm) {
-        bpmLabel.setText(String.valueOf(bpm) + "bpm");
+    private void updateTimerController() {
+        this.timerController.setExerciseDefinition(this.exerciseDefinition);
     }
 
-    private float calculateTime(int practicedTime) {
-        return ((float) practicedTime) / exerciseDefinition.getMiliSeconds();
+    public void initBeanAdapter() {
+
+        if (beanPathAdapter == null) {
+            beanPathAdapter = new BeanPathAdapter<>(exerciseDefinition);
+            beanPathAdapter.bindBidirectional("rating", ratingBox.valueProperty(), Rating.class);
+            beanPathAdapter.bindBidirectional("targetBpmAsDouble", bpmSlider.maxProperty());
+
+            exerciseBeanPathAdapter = new BeanPathAdapter<>(exerciseInstance);
+            exerciseBeanPathAdapter.bindBidirectional("bpmAsDouble", bpmSlider.valueProperty());
+            exerciseBeanPathAdapter.bindBidirectional("practiceTimeProgress", progressBar.progressProperty());
+
+        }
+        beanPathAdapter.setBean(exerciseDefinition);
+        exerciseBeanPathAdapter.setBean(exerciseInstance);
     }
 
+    public void refresh() {
+        initCurrentExercises();
+        select(exerciseDefinition);
+    }
+
+    public void refreshProgress() {
+        if (exerciseInstance != null) {
+
+            double practiceTimeProgress = exerciseInstance.getPracticeTimeProgress();
+            this.progressBar.setProgress(practiceTimeProgress);
+        } else {
+            this.progressBar.setProgress(0);
+
+        }
+    }
 }

@@ -24,7 +24,17 @@
     <TextArea fx:id="descriptionField" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     <TextField fx:id="minutesField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <TextField fx:id="bpmField" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-    <TextArea id="filesField" fx:id="imageContentFilesField" prefWidth="200.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <VBox id="VBox" alignment="CENTER" prefHeight="75.0" prefWidth="270.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+      <children>
+        <TextArea fx:id="filesField" prefWidth="200.0" wrapText="true" />
+        <HBox id="HBox" alignment="TOP_RIGHT" spacing="5.0">
+          <children>
+            <Button fx:id="previewButton" mnemonicParsing="false" text="Preview" />
+            <Button fx:id="selectFilesButton" mnemonicParsing="false" prefWidth="129.0" text="Select Files" textAlignment="CENTER" />
+          </children>
+        </HBox>
+      </children>
+    </VBox>
     <ChoiceBox fx:id="ratingField" prefWidth="599.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="NEVER">
       <items>
         <FXCollections fx:factory="observableArrayList">

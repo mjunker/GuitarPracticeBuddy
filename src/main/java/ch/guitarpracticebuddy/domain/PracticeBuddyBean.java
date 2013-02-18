@@ -48,6 +48,11 @@ public class PracticeBuddyBean {
     private void init() {
         this.practiceWeeks = loadPracticePlans(em);
         this.exerciseDefinitions = loadExcerciseDefs(em);
+        for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
+            for (ExerciseInstance exerciseInstance : exerciseDefinition.getPlannedInstances()) {
+                exerciseInstance.setExerciseDefinition(exerciseDefinition);
+            }
+        }
         this.tags = loadTags();
     }
 
