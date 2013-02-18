@@ -12,6 +12,9 @@
     <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:2.1" level="project" />
+    <orderEntry type="library" name="Maven: com.dooapp.fxform2:core:0.2.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />
+    <orderEntry type="library" name="Maven: javafx:javafx:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:0.11.6" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.lambdaj:lambdaj:2.2" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-all:1.1" level="project" />

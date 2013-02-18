@@ -2,6 +2,7 @@ package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.ExerciseAttachment;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import ch.guitarpracticebuddy.util.FileUtil;
 import lombok.Getter;
 
 import javax.imageio.ImageIO;

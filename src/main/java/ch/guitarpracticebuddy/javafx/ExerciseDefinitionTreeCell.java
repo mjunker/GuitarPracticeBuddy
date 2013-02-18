@@ -41,12 +41,14 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
         super.updateItem(object, b);
         if (object instanceof ExerciseDefinition) {
             this.exerciseDefinition = (ExerciseDefinition) object;
-            setText(createExerciseDefinitionString((ExerciseDefinition) object));
+            this.textProperty().bind(this.exerciseDefinition.titleProperty());
             initDragAndDropExerciseDefinition();
 
         } else if (object instanceof PracticeWeek) {
             this.practiceWeek = (PracticeWeek) object;
-            setText(createPracticeWeekString((PracticeWeek) object));
+            // TODO
+            // this.textProperty().bind(this.practiceWeek.titleProperty());
+            setText(createPracticeWeekString(this.practiceWeek));
             initDropListener();
 
         } else {

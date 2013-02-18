@@ -4,7 +4,8 @@ import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.Rating;
 import ch.guitarpracticebuddy.domain.Tag;
-import ch.guitarpracticebuddy.ui.FileUtil;
+import ch.guitarpracticebuddy.util.FileUtil;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -13,7 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import jfxtras.labs.scene.control.BeanPathAdapter;
+import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.net.URL;
@@ -37,15 +39,12 @@ public class ExerciseDefinitionFormController implements Initializable {
     private ListView tagField;
     @FXML
     private ChoiceBox ratingField;
-
     @FXML
     private Button selectFilesButton;
-
     @FXML
     private Button previewButton;
-
-    private BeanPathAdapter<ExerciseDefinition> beanPathAdapter;
     private PracticeBuddyBean practiceBuddyBean;
+    private ExerciseDefinition exerciseDefinition;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,12 +59,14 @@ public class ExerciseDefinitionFormController implements Initializable {
                 FileChooser fileChooser = new FileChooser();
 
                 List<File> files = fileChooser.showOpenMultipleDialog(null);
-                appendFiles(files, beanPathAdapter.getBean());
+                if (files != null) {
+                    appendFiles(files);
+                }
             }
         });
     }
 
-    private void appendFiles(List<File> selectedFiles, ExerciseDefinition exerciseDefinition) {
+    private void appendFiles(List<File> selectedFiles) {
         List<String> relativePaths = FileUtil.copyFilesToApplicationHome(selectedFiles, exerciseDefinition);
         filesField.setText(ExerciseDefinition.createAttachmentString(relativePaths));
 
@@ -77,30 +78,38 @@ public class ExerciseDefinitionFormController implements Initializable {
         tagField.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object o2) {
-                beanPathAdapter.getBean().setTags(tagField.getItems());
+                exerciseDefinition.setTags(tagField.getItems());
             }
         });
 
     }
 
     public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {
-        getAndBindBeanAdapter(exerciseDefinition == null ? new ExerciseDefinition() : exerciseDefinition);
+        bindFields(this.exerciseDefinition, exerciseDefinition);
+        this.exerciseDefinition = exerciseDefinition;
         updateTags();
 
     }
 
-    private void getAndBindBeanAdapter(ExerciseDefinition exerciseDefinition) {
-        if (beanPathAdapter == null) {
-            beanPathAdapter = new BeanPathAdapter<>(exerciseDefinition);
-            beanPathAdapter.bindBidirectional("title", titleField.textProperty());
-            beanPathAdapter.bindBidirectional("description", descriptionField.textProperty());
-            beanPathAdapter.bindBidirectional("minutes", minutesField.textProperty());
-            beanPathAdapter.bindBidirectional("bpm", bpmField.textProperty());
-            beanPathAdapter.bindBidirectional("attachmentsAsString", filesField.textProperty());
-            beanPathAdapter.bindBidirectional("rating", ratingField.valueProperty(), Rating.class);
+    private void bindFields(ExerciseDefinition oldValue, ExerciseDefinition newValue) {
+
+        if (oldValue != null) {
+            Bindings.unbindBidirectional(minutesField.textProperty(), oldValue.minutesProperty());
+            Bindings.unbindBidirectional(bpmField.textProperty(), oldValue.bpmProperty());
+            Bindings.unbindBidirectional(filesField.textProperty(), oldValue.attachmentsAsStringProperty());
+            Bindings.unbindBidirectional(titleField.textProperty(), oldValue.titleProperty());
+            Bindings.unbindBidirectional(descriptionField.textProperty(), oldValue.descriptionProperty());
+            Bindings.unbindBidirectional(ratingField.valueProperty(), oldValue.ratingProperty());
         }
 
-        beanPathAdapter.setBean(exerciseDefinition);
+        if (newValue != null) {
+            Bindings.bindBidirectional(minutesField.textProperty(), newValue.minutesProperty(), (StringConverter) new IntegerStringConverter());
+            Bindings.bindBidirectional(bpmField.textProperty(), newValue.bpmProperty(), (StringConverter) new IntegerStringConverter());
+            Bindings.bindBidirectional(filesField.textProperty(), newValue.attachmentsAsStringProperty());
+            Bindings.bindBidirectional(titleField.textProperty(), newValue.titleProperty());
+            Bindings.bindBidirectional(descriptionField.textProperty(), newValue.descriptionProperty());
+            Bindings.bindBidirectional(ratingField.valueProperty(), newValue.ratingProperty());
+        }
 
     }
 
@@ -124,9 +133,9 @@ public class ExerciseDefinitionFormController implements Initializable {
 
     private void updateTags() {
 
-        if (beanPathAdapter.getBean() != null && !beanPathAdapter.getBean().getTags().isEmpty()) {
+        if (exerciseDefinition != null && !exerciseDefinition.getTags().isEmpty()) {
             List<Tag> tags = this.practiceBuddyBean.getTags();
-            int[] selectedIndices = getIndices(beanPathAdapter.getBean().getTags());
+            int[] selectedIndices = getIndices(exerciseDefinition.getTags());
             sortTags(tags, selectedIndices);
             this.tagField.setItems(FXCollections.observableArrayList(tags));
             this.tagField.getSelectionModel().selectIndices(-1, toIntArray(createIndices()));
@@ -141,7 +150,7 @@ public class ExerciseDefinitionFormController implements Initializable {
 
         List<Integer> indices = new ArrayList<>();
         int i = 0;
-        for (Tag ignored : beanPathAdapter.getBean().getTags()) {
+        for (Tag ignored : exerciseDefinition.getTags()) {
             indices.add(i);
             i++;
         }

@@ -1,7 +1,6 @@
 package ch.guitarpracticebuddy.ui;
 
-import ch.guitarpracticebuddy.domain.ExerciseDefinition;
-import ch.guitarpracticebuddy.javafx.PracticeController;
+import ch.guitarpracticebuddy.domain.ExerciseInstance;
 import ch.guitarpracticebuddy.util.SoundFile;
 import ch.guitarpracticebuddy.util.SoundUtil;
 import javafx.animation.Animation;
@@ -14,28 +13,26 @@ import javafx.util.Duration;
 public class ExerciseTimer {
 
     public static final int INTERVAL = 50;
-    private final ExerciseDefinition exerciseDefinition;
+    private final ExerciseInstance exerciseInstance;
     private Timeline timer;
     private Timeline bpmTimer;
     private int currentTime = 0;
     private int bpm = 100;
     private boolean metronomeEnabled = true;
-    private final PracticeController practiceController;
 
-    public ExerciseTimer(final ExerciseDefinition exerciseDefinition, PracticeController practiceController) {
+    public ExerciseTimer(final ExerciseInstance exerciseInstance) {
 
-        this.practiceController = practiceController;
-        this.currentTime = exerciseDefinition.getTodaysExercises().getPracticedTime();
-        this.exerciseDefinition = exerciseDefinition;
+        this.currentTime = exerciseInstance.getPracticedTime();
+        this.exerciseInstance = exerciseInstance;
         initBpmTimer();
-        timer = new Timeline(new KeyFrame(Duration.millis(INTERVAL), new TimerActionListener(exerciseDefinition)));
+        timer = new Timeline(new KeyFrame(Duration.millis(INTERVAL), new TimerActionListener(exerciseInstance)));
         timer.setCycleCount(Timeline.INDEFINITE);
 
     }
 
     private void initBpmTimer() {
 
-        bpmTimer = new Timeline(new KeyFrame(Duration.millis(exerciseDefinition.getClickIntervalInMs()), new EventHandler<ActionEvent>() {
+        bpmTimer = new Timeline(new KeyFrame(Duration.millis(exerciseInstance.getClickIntervalInMs()), new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -60,10 +57,6 @@ public class ExerciseTimer {
 
     }
 
-    public ExerciseDefinition getExerciseDefinition() {
-        return exerciseDefinition;
-    }
-
     public void restartBpmTimer() {
         if (this.bpmTimer != null) {
             this.bpmTimer.stop();
@@ -75,22 +68,25 @@ public class ExerciseTimer {
         }
     }
 
+    public ExerciseInstance getExerciseInstance() {
+        return exerciseInstance;
+    }
+
     public boolean isRunning() {
         return timer.getStatus() == Animation.Status.RUNNING;
     }
 
     private class TimerActionListener implements EventHandler<ActionEvent> {
 
-        private final ExerciseDefinition exerciseDefinition;
+        private final ExerciseInstance exerciseInstance;
 
-        public TimerActionListener(ExerciseDefinition exerciseDefinition) {
-            this.exerciseDefinition = exerciseDefinition;
+        public TimerActionListener(ExerciseInstance exerciseInstance) {
+            this.exerciseInstance = exerciseInstance;
         }
 
         private void updateCurrentState() {
             currentTime += INTERVAL;
-            exerciseDefinition.getTodaysExercises().setPracticedTime(currentTime);
-            practiceController.refreshProgress();
+            exerciseInstance.setPracticedTime(currentTime);
 
         }
 
@@ -98,12 +94,11 @@ public class ExerciseTimer {
 
             SoundUtil.playSound(SoundFile.DONE);
             ExerciseTimer.this.stop();
-            exerciseDefinition.getTodaysExercises().finish(bpm, currentTime);
-            practiceController.refresh();
+            exerciseInstance.finish(bpm, currentTime);
         }
 
         private boolean isTimeUp() {
-            return currentTime > exerciseDefinition.getMiliSeconds();
+            return currentTime > exerciseInstance.getExerciseDefinition().getMiliSeconds();
         }
 
         @Override

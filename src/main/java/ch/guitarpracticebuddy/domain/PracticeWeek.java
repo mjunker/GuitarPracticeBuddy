@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.domain;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -21,10 +22,8 @@ public class PracticeWeek {
     @Getter
     private int id;
 
-
     @Getter
     private LocalDate dateFrom;
-
 
     @Getter
     private LocalDate dateTo;
@@ -38,7 +37,6 @@ public class PracticeWeek {
         this.dateTo = end;
         assertValidWeek();
     }
-
 
     public boolean activate(ExerciseDefinition exerciseDefinition) {
         Preconditions.checkNotNull(exerciseDefinition);
@@ -71,7 +69,6 @@ public class PracticeWeek {
         return select(exerciseDefinition.getPlannedInstances(), having(on(ExerciseInstance.class).isInInterval(getInterval()), equalTo(true)));
     }
 
-
     public void setDateFrom(LocalDate dateFrom) {
         this.dateFrom = dateFrom;
         assertValidWeek();
@@ -102,5 +99,9 @@ public class PracticeWeek {
             sum += exerciseDefinition.getMinutes();
         }
         return sum;
+    }
+
+    public StringProperty titleProperty() {
+        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 }

@@ -22,7 +22,7 @@ public class PlanningTree extends TreeView {
     private ExerciseDefinition selectedExerciseDefinition;
     private PracticeWeek selectedPracticeWeek;
     private PracticeBuddyBean practiceBuddyBean;
-    private List<Tag> selectedTags = new ArrayList<Tag>();
+    private List<Tag> selectedTags = new ArrayList<>();
     private TreeItem root = new TreeItem();
     ;
 

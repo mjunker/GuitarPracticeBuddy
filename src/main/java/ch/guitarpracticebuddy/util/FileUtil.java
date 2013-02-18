@@ -1,4 +1,4 @@
-package ch.guitarpracticebuddy.ui;
+package ch.guitarpracticebuddy.util;
 
 import ch.guitarpracticebuddy.domain.ExerciseAttachment;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
@@ -24,17 +24,12 @@ public class FileUtil {
                 new File(getApplicationHome() + SEPARATOR + getExerciseDirectory(exerciseDefinition)).mkdirs();
                 final File destination = new File(getExerciseDirectoryAbsolute(exerciseDefinition) + selectedFile.getName());
                 Files.copy(selectedFile, destination);
-                scaleImageInNewThread(destination);
                 fileNames.add(selectedFile.getName());
             } catch (IOException e) {
                 throw new IllegalArgumentException("Cannot copy file", e);
             }
         }
         return fileNames;
-    }
-
-    private static void scaleImageInNewThread(final File destination) {
-
     }
 
     private static String getExerciseDirectoryAbsolute(ExerciseDefinition exerciseDefinition) {

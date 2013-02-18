@@ -4,7 +4,8 @@ import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.ExerciseInstance;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.Rating;
-import ch.guitarpracticebuddy.ui.FileUtil;
+import ch.guitarpracticebuddy.util.FileUtil;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,7 +20,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import jfxtras.labs.scene.control.BeanPathAdapter;
+import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -48,8 +50,6 @@ public class PracticeController implements Initializable {
     @FXML
     private VBox practiceContentPanel;
     private TimerController timerController;
-    private BeanPathAdapter<ExerciseDefinition> beanPathAdapter;
-    private BeanPathAdapter<ExerciseInstance> exerciseBeanPathAdapter;
     private ExerciseInstance exerciseInstance;
 
     @Override
@@ -94,7 +94,7 @@ public class PracticeController implements Initializable {
     }
 
     private void initTimerController() {
-        this.timerController = new TimerController(startButton, this);
+        this.timerController = new TimerController(startButton);
     }
 
     private void initCurrentExercises() {
@@ -110,7 +110,7 @@ public class PracticeController implements Initializable {
                     protected void updateItem(ExerciseDefinition exerciseDefinition, boolean b) {
                         super.updateItem(exerciseDefinition, b);
                         if (exerciseDefinition != null) {
-                            setText(exerciseDefinition.getTitle());
+                            textProperty().bind(exerciseDefinition.titleProperty());
                         }
                     }
                 };
@@ -134,6 +134,9 @@ public class PracticeController implements Initializable {
     }
 
     private void select(ExerciseDefinition exerciseDefinition) {
+
+        bind(this.exerciseDefinition, exerciseDefinition);
+
         this.exerciseDefinition = exerciseDefinition;
         if (this.exerciseDefinition != null) {
             this.exerciseInstance = exerciseDefinition.getTodaysExercises();
@@ -143,10 +146,8 @@ public class PracticeController implements Initializable {
         }
         initPracticeContent();
         updateTimerController();
-        refreshProgress();
 
         if (this.exerciseInstance != null) {
-            initBeanAdapter();
 
         } else {
             this.timerController.resetTimer();
@@ -154,23 +155,27 @@ public class PracticeController implements Initializable {
     }
 
     private void updateTimerController() {
-        this.timerController.setExerciseDefinition(this.exerciseDefinition);
+        this.timerController.setExerciseInstance(this.exerciseInstance);
     }
 
-    public void initBeanAdapter() {
+    public void bind(ExerciseDefinition oldValue, ExerciseDefinition newValue) {
+        if (oldValue != null) {
+            Bindings.unbindBidirectional(ratingBox.valueProperty(), oldValue.ratingProperty());
+            Bindings.unbindBidirectional(bpmSlider.maxProperty(), oldValue.bpmProperty());
+            Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
+            Bindings.unbindBidirectional(bpmLabel.textProperty(), oldValue.getTodaysExercises().bpmProperty());
+            progressBar.progressProperty().unbind();
+        }
 
-        if (beanPathAdapter == null) {
-            beanPathAdapter = new BeanPathAdapter<>(exerciseDefinition);
-            beanPathAdapter.bindBidirectional("rating", ratingBox.valueProperty(), Rating.class);
-            beanPathAdapter.bindBidirectional("targetBpmAsDouble", bpmSlider.maxProperty());
-
-            exerciseBeanPathAdapter = new BeanPathAdapter<>(exerciseInstance);
-            exerciseBeanPathAdapter.bindBidirectional("bpmAsDouble", bpmSlider.valueProperty());
-            exerciseBeanPathAdapter.bindBidirectional("practiceTimeProgress", progressBar.progressProperty());
+        if (newValue != null) {
+            Bindings.bindBidirectional(ratingBox.valueProperty(), newValue.ratingProperty());
+            Bindings.bindBidirectional(bpmSlider.maxProperty(), newValue.bpmProperty());
+            Bindings.bindBidirectional(bpmSlider.valueProperty(), newValue.getTodaysExercises().bpmProperty());
+            Bindings.bindBidirectional(bpmLabel.textProperty(), newValue.getTodaysExercises().bpmProperty(), (StringConverter) new IntegerStringConverter());
+            progressBar.progressProperty().bind(newValue.getTodaysExercises().practiceTimeProgressProperty());
 
         }
-        beanPathAdapter.setBean(exerciseDefinition);
-        exerciseBeanPathAdapter.setBean(exerciseInstance);
+
     }
 
     public void refresh() {
@@ -178,14 +183,4 @@ public class PracticeController implements Initializable {
         select(exerciseDefinition);
     }
 
-    public void refreshProgress() {
-        if (exerciseInstance != null) {
-
-            double practiceTimeProgress = exerciseInstance.getPracticeTimeProgress();
-            this.progressBar.setProgress(practiceTimeProgress);
-        } else {
-            this.progressBar.setProgress(0);
-
-        }
-    }
 }

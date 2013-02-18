@@ -1,6 +1,6 @@
 package ch.guitarpracticebuddy.javafx;
 
-import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import ch.guitarpracticebuddy.domain.ExerciseInstance;
 import ch.guitarpracticebuddy.ui.ExerciseTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -10,12 +10,10 @@ public class TimerController {
 
     private ButtonBase startButton;
     private ExerciseTimer timer;
-    private ExerciseDefinition exerciseDefinition;
-    private final PracticeController practiceController;
+    private ExerciseInstance exerciseInstance;
 
-    public TimerController(ButtonBase startButton, PracticeController practiceController) {
+    public TimerController(ButtonBase startButton) {
         this.startButton = startButton;
-        this.practiceController = practiceController;
         this.startButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -51,8 +49,8 @@ public class TimerController {
 
     }
 
-    public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {
-        this.exerciseDefinition = exerciseDefinition;
+    public void setExerciseInstance(ExerciseInstance exerciseInstance) {
+        this.exerciseInstance = exerciseInstance;
         initTimerIfNecessary();
     }
 
@@ -70,9 +68,9 @@ public class TimerController {
     }
 
     public void initTimerIfNecessary() {
-        if (exerciseDefinition != null && (timer == null
-                || !timer.getExerciseDefinition().equals(exerciseDefinition))) {
-            timer = new ExerciseTimer(exerciseDefinition, practiceController);
+        if (exerciseInstance != null && (timer == null
+                || !timer.getExerciseInstance().equals(exerciseInstance))) {
+            timer = new ExerciseTimer(exerciseInstance);
 
         }
     }
