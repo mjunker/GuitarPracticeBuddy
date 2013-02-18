@@ -10,3 +10,31 @@
     -fx-text-fill: black;
 }
 
+.list-cell .practiceList {
+    -fx-padding: 0 0 0 25px
+
+}
+
+.list-cell .done {
+    -fx-background-image: url('yes.png');
+    -fx-background-repeat: stretch;
+    -fx-background-position: 5px, center;
+
+}
+
+.list-cell .planned {
+    -fx-background-image: null;
+    -fx-background-repeat: stretch;
+    -fx-background-position: 5px, center;
+
+}
+
+.list-cell .skip {
+    -fx-background-image: url('skip.png');
+    -fx-background-repeat: stretch;
+    -fx-background-position: 5px, center;
+
+}
+
+
+

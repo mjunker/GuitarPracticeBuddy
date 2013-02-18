@@ -37,6 +37,9 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
     private ExerciseDefinition exerciseDefinition;
     private PracticeWeek practiceWeek;
 
+    public ExerciseDefinitionTreeCell() {
+    }
+
     @Override
     protected void updateItem(Object object, boolean b) {
         super.updateItem(object, b);

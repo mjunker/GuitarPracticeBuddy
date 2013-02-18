@@ -1,9 +1,6 @@
 package ch.guitarpracticebuddy.javafx;
 
-import ch.guitarpracticebuddy.domain.ExerciseDefinition;
-import ch.guitarpracticebuddy.domain.ExerciseInstance;
-import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
-import ch.guitarpracticebuddy.domain.Rating;
+import ch.guitarpracticebuddy.domain.*;
 import ch.guitarpracticebuddy.util.FileUtil;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -138,16 +135,7 @@ public class PracticeController implements Initializable {
 
             @Override
             public ListCell<ExerciseDefinition> call(ListView<ExerciseDefinition> exerciseDefinitionListView) {
-                ListCell<ExerciseDefinition> exerciseDefinitionListCell = new ListCell<ExerciseDefinition>() {
-                    @Override
-                    protected void updateItem(ExerciseDefinition exerciseDefinition, boolean b) {
-                        super.updateItem(exerciseDefinition, b);
-                        if (exerciseDefinition != null) {
-                            textProperty().bind(exerciseDefinition.titleProperty());
-                        }
-                    }
-                };
-                return exerciseDefinitionListCell;
+                return new ExerciseDefinitionListCell();
             }
         });
         currentExercisesTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ExerciseDefinition>() {
@@ -216,4 +204,48 @@ public class PracticeController implements Initializable {
         select(exerciseDefinition);
     }
 
+    private class ExerciseDefinitionListCell extends ListCell<ExerciseDefinition> {
+
+        @Override
+        protected void updateItem(final ExerciseDefinition exerciseDefinition, boolean b) {
+            super.updateItem(exerciseDefinition, b);
+
+            if (exerciseDefinition != null) {
+                exerciseDefinition.getTodaysExercises().statusProperty().addListener(new ChangeListener<ExerciseStatus>() {
+                    @Override
+                    public void changed(ObservableValue<? extends ExerciseStatus> observableValue, ExerciseStatus exerciseStatus, ExerciseStatus exerciseStatus2) {
+                        setPracticeListStyle(exerciseDefinition);
+                    }
+                });
+                textProperty().bind(exerciseDefinition.titleProperty());
+                setPracticeListStyle(exerciseDefinition);
+            }
+
+        }
+
+        private void setPracticeListStyle(ExerciseDefinition exerciseDefinition) {
+            getStyleClass().add("practiceList");
+
+            getStyleClass().remove("done");
+            getStyleClass().remove("skip");
+            getStyleClass().remove("planned");
+
+            switch (exerciseDefinition.getTodaysExercises().getStatus()) {
+
+                case DONE:
+                    getStyleClass().add("done");
+
+                    break;
+                case SKIPPED:
+                    getStyleClass().add("skip");
+
+                    break;
+                case PLANNED:
+                    getStyleClass().add("planned");
+
+                    break;
+            }
+
+        }
+    }
 }
