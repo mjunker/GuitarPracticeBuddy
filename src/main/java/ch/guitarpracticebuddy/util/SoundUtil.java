@@ -1,6 +1,6 @@
 package ch.guitarpracticebuddy.util;
 
-import ch.guitarpracticebuddy.ui.PracticeForm;
+import ch.guitarpracticebuddy.javafx.GuitarPracticeBuddyApplication;
 
 import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
@@ -16,7 +16,6 @@ import java.io.InputStream;
  */
 public class SoundUtil {
 
-
     public static void playSound(SoundFile soundFile) {
         try {
 
@@ -28,7 +27,7 @@ public class SoundUtil {
 
     private static Clip loadClip(SoundFile soundFile) throws LineUnavailableException, UnsupportedAudioFileException, IOException {
         Clip clip = AudioSystem.getClip();
-        InputStream bufferedIn = new BufferedInputStream(PracticeForm.class.getResourceAsStream(soundFile.getFileName()));
+        InputStream bufferedIn = new BufferedInputStream(GuitarPracticeBuddyApplication.class.getResourceAsStream(soundFile.getFileName()));
 
         AudioInputStream inputStream = AudioSystem.getAudioInputStream(bufferedIn);
         clip.open(inputStream);

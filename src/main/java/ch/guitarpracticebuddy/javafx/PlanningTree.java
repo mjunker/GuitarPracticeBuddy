@@ -25,7 +25,6 @@ public class PlanningTree extends TreeView {
     private List<Tag> selectedTags = new ArrayList<>();
     private TreeItem root = new TreeItem();
 
-
     public PlanningTree() {
         initTreeModel();
         addSelectionListener();
@@ -95,6 +94,10 @@ public class PlanningTree extends TreeView {
         return selectedPracticeWeek;
     }
 
+    public ExerciseDefinition getSelectedExerciseDefinition() {
+        return selectedExerciseDefinition;
+    }
+
     public void setTagFilter(List<Tag> selectedTags) {
         this.selectedTags = selectedTags;
         filter();
@@ -103,7 +106,6 @@ public class PlanningTree extends TreeView {
     private void filter() {
         buildTree();
     }
-
 
     public void refresh() {
         buildTree();
@@ -158,7 +160,6 @@ public class PlanningTree extends TreeView {
 
         ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE.getChildren().clear();
         ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE.getChildren().clear();
-
 
         addPracticePlanModels(ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE);
         addAllExcercisesModels(ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE);

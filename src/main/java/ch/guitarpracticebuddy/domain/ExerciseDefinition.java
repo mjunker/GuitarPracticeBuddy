@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import lombok.Getter;
 import lombok.Setter;
 import org.hamcrest.BaseMatcher;
@@ -68,6 +67,15 @@ public class ExerciseDefinition {
                 having(on(ExerciseInstance.class).isForToday(), equalTo(true)));
     }
 
+    public ExerciseInstance getExerciseForDay(LocalDate date) {
+        for (ExerciseInstance exerciseInstance : getPlannedInstances()) {
+            if (exerciseInstance.getDay().toLocalDate().equals(date)) {
+                return exerciseInstance;
+            }
+        }
+        return null;
+    }
+
     public void createInstancesForEntireWeek(Interval interval) {
         for (LocalDate localDate : new LocalDateRange(interval)) {
             ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
@@ -95,7 +103,6 @@ public class ExerciseDefinition {
 
     public void removeTag(Tag tag) {
         tags.remove(tag);
-        tagsProperty().get().remove(tag);
     }
 
     public void deleteInstances(Iterable<ExerciseInstance> exerciseInstances) {
@@ -122,7 +129,6 @@ public class ExerciseDefinition {
 
     public void setTags(List<Tag> tags) {
         this.tags = new ArrayList<>(tags);
-        tagsProperty().set(FXCollections.observableArrayList(tags));
     }
 
     public Rating getRating() {
@@ -137,13 +143,17 @@ public class ExerciseDefinition {
     }
 
     public void setAttachmentsAsString(String content) {
+        internalSetAttachment(content);
+        attachmentsAsStringProperty().set(content);
+    }
+
+    private void internalSetAttachment(String content) {
         List<ExerciseAttachment> attachments = new ArrayList<>();
 
         for (String filePath : Splitter.on("\n").omitEmptyStrings().split(content)) {
             attachments.add(new ExerciseAttachment(filePath));
         }
         this.attachments = attachments;
-        attachmentsAsStringProperty().set(content);
     }
 
     public void setTitle(String title) {
@@ -189,7 +199,13 @@ public class ExerciseDefinition {
 
     public IntegerProperty minutesProperty() {
         if (this.minutesProperty == null) {
-            this.minutesProperty = new SimpleIntegerProperty(this, "minutes");
+            this.minutesProperty = new SimpleIntegerProperty(this, "minutes") {
+                @Override
+                public void set(int i) {
+                    super.set(i);
+                    minutes = i;
+                }
+            };
             this.minutesProperty.set(getMinutes());
         }
         return minutesProperty;
@@ -211,7 +227,13 @@ public class ExerciseDefinition {
 
     public StringProperty descriptionProperty() {
         if (this.descriptionProperty == null) {
-            this.descriptionProperty = new SimpleStringProperty(this, "description");
+            this.descriptionProperty = new SimpleStringProperty(this, "description") {
+                @Override
+                public void set(String s) {
+                    super.set(s);
+                    description = s;
+                }
+            };
             this.descriptionProperty.set(getDescription());
         }
         return descriptionProperty;
@@ -219,7 +241,13 @@ public class ExerciseDefinition {
 
     public IntegerProperty bpmProperty() {
         if (this.bpmProperty == null) {
-            this.bpmProperty = new SimpleIntegerProperty(this, "bpm");
+            this.bpmProperty = new SimpleIntegerProperty(this, "bpm") {
+                @Override
+                public void set(int value) {
+                    super.set(value);
+                    bpm = value;
+                }
+            };
             this.bpmProperty.set(getBpm());
         }
         return bpmProperty;
@@ -227,31 +255,27 @@ public class ExerciseDefinition {
 
     public ObjectProperty<Rating> ratingProperty() {
         if (this.ratingProperty == null) {
-            this.ratingProperty = new SimpleObjectProperty<>(this, "rating");
+            this.ratingProperty = new SimpleObjectProperty<Rating>(this, "rating") {
+                @Override
+                public void set(Rating value) {
+                    super.set(value);
+                    rating = value;
+                }
+            };
             this.ratingProperty.set(getRating());
         }
         return ratingProperty;
     }
 
-    public ListProperty<Tag> tagsProperty() {
-        if (this.tagsProperty == null) {
-            this.tagsProperty = new SimpleListProperty<>(this, "tags");
-            this.tagsProperty.set(FXCollections.observableArrayList(getTags()));
-        }
-        return tagsProperty;
-    }
-
-    public ListProperty<ExerciseInstance> plannedInstancesProperty() {
-        if (this.plannedInstancesProperty == null) {
-            this.plannedInstancesProperty = new SimpleListProperty<>(this, "plannedInstances");
-            this.plannedInstancesProperty.set(FXCollections.observableArrayList(getPlannedInstances()));
-        }
-        return plannedInstancesProperty;
-    }
-
     public StringProperty attachmentsAsStringProperty() {
         if (this.attachmentsProperty == null) {
-            this.attachmentsProperty = new SimpleStringProperty(this, "attachments");
+            this.attachmentsProperty = new SimpleStringProperty(this, "attachments") {
+                @Override
+                public void set(String value) {
+                    super.set(value);
+                    internalSetAttachment(value);
+                }
+            };
             this.attachmentsProperty.set(getAttachmentsAsString());
         }
         return attachmentsProperty;

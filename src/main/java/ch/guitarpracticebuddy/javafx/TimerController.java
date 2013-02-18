@@ -29,10 +29,7 @@ public class TimerController {
     }
 
     public void resetTimer() {
-        if (this.timer != null) {
-
-            this.timer.stop();
-        }
+        stopTimer();
         this.timer = null;
     }
 
@@ -50,8 +47,18 @@ public class TimerController {
     }
 
     public void setExerciseInstance(ExerciseInstance exerciseInstance) {
+
         this.exerciseInstance = exerciseInstance;
+
+        stopCurrentTimerIfNecessary();
         initTimerIfNecessary();
+    }
+
+    private void stopCurrentTimerIfNecessary() {
+        if (timer != null && !timer.getExerciseInstance().equals(this.exerciseInstance)) {
+            stopTimer();
+            timer = null;
+        }
     }
 
     public void startTimer() {
@@ -70,7 +77,7 @@ public class TimerController {
     public void initTimerIfNecessary() {
         if (exerciseInstance != null && (timer == null
                 || !timer.getExerciseInstance().equals(exerciseInstance))) {
-            timer = new ExerciseTimer(exerciseInstance);
+            timer = new ExerciseTimer(exerciseInstance, this);
 
         }
     }

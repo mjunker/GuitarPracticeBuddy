@@ -10,6 +10,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -58,7 +60,35 @@ public class PracticeController implements Initializable {
         initRatingBox();
         initTimerController();
         initCurrentExercises();
+        initButtons();
 
+        this.bpmSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+                timerController.restartBpmTime();
+            }
+        });
+
+    }
+
+    private void initButtons() {
+        this.skipButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (exerciseInstance != null) {
+                    exerciseInstance.skip();
+                }
+            }
+        });
+
+        this.resetButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (exerciseInstance != null) {
+                    exerciseInstance.reset();
+                }
+            }
+        });
     }
 
     private void initPracticeContent() {
@@ -66,7 +96,6 @@ public class PracticeController implements Initializable {
         if (exerciseDefinition != null) {
 
             ScrollPane scrollPane = new ScrollPane();
-
             scrollPane.setFitToHeight(true);
             scrollPane.setFitToWidth(true);
 

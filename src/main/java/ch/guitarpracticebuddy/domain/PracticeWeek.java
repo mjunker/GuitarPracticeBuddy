@@ -64,7 +64,7 @@ public class PracticeWeek {
         return new Interval(dateFrom.toDateTimeAtStartOfDay(), dateTo.toDateTimeAtStartOfDay().plusDays(1).minusMillis(1));
     }
 
-    public Iterable<ExerciseInstance> getExerciseInstances(ExerciseDefinition exerciseDefinition) {
+    public List<ExerciseInstance> getExerciseInstances(ExerciseDefinition exerciseDefinition) {
 
         return select(exerciseDefinition.getPlannedInstances(), having(on(ExerciseInstance.class).isInInterval(getInterval()), equalTo(true)));
     }

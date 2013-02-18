@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.ui;
 
 import ch.guitarpracticebuddy.domain.ExerciseInstance;
+import ch.guitarpracticebuddy.javafx.TimerController;
 import ch.guitarpracticebuddy.util.SoundFile;
 import ch.guitarpracticebuddy.util.SoundUtil;
 import javafx.animation.Animation;
@@ -19,9 +20,11 @@ public class ExerciseTimer {
     private int currentTime = 0;
     private int bpm = 100;
     private boolean metronomeEnabled = true;
+    private final TimerController timerController;
 
-    public ExerciseTimer(final ExerciseInstance exerciseInstance) {
+    public ExerciseTimer(final ExerciseInstance exerciseInstance, TimerController timerController) {
 
+        this.timerController = timerController;
         this.currentTime = exerciseInstance.getPracticedTime();
         this.exerciseInstance = exerciseInstance;
         initBpmTimer();
@@ -93,7 +96,7 @@ public class ExerciseTimer {
         private void finishTimer() {
 
             SoundUtil.playSound(SoundFile.DONE);
-            ExerciseTimer.this.stop();
+            timerController.stopTimer();
             exerciseInstance.finish(bpm, currentTime);
         }
 

@@ -40,6 +40,10 @@ public class ExerciseInstance {
         return DateTimeComparator.getDateOnlyInstance().compare(day, null) == 0;
     }
 
+    public String getTitle() {
+        return exerciseDefinition.getTitle();
+    }
+
     public int getClickIntervalInMs() {
 
         if (getBpm() == 0) {
@@ -54,19 +58,15 @@ public class ExerciseInstance {
 
     public void setStatus(ExerciseStatus status) {
         this.status = status;
-        statusProperty.set(status);
+        statusProperty().set(status);
+    }
+
+    public ExerciseStatus getStatus() {
+        return status;
     }
 
     public boolean isDone() {
         return this.status == ExerciseStatus.DONE;
-    }
-
-    public void setDone(boolean selected) {
-        if (selected) {
-            setDone();
-        } else {
-            setStatus(ExerciseStatus.PLANNED);
-        }
     }
 
     public void skip() {
@@ -104,7 +104,7 @@ public class ExerciseInstance {
 
     public void setBpm(int bpm) {
         this.actualBpm = bpm;
-        this.bpmProperty.set(bpm);
+        this.bpmProperty().setValue(bpm);
 
     }
 
@@ -122,7 +122,13 @@ public class ExerciseInstance {
 
     public ObjectProperty<ExerciseStatus> statusProperty() {
         if (this.statusProperty == null) {
-            this.statusProperty = new SimpleObjectProperty(this, "status");
+            this.statusProperty = new SimpleObjectProperty<ExerciseStatus>(this, "status") {
+                @Override
+                public void set(ExerciseStatus o) {
+                    super.set(o);
+                    status = o;
+                }
+            };
             this.statusProperty.set(status);
         }
         return this.statusProperty;
@@ -130,9 +136,24 @@ public class ExerciseInstance {
 
     public Property<Number> bpmProperty() {
         if (this.bpmProperty == null) {
-            this.bpmProperty = new SimpleIntegerProperty(this, "bpm");
+            this.bpmProperty = new SimpleIntegerProperty(this, "bpm") {
+                @Override
+                public void set(int i) {
+                    super.set(i);
+                    actualBpm = i;
+                }
+            };
             this.bpmProperty.set(getBpm());
         }
         return this.bpmProperty;
+    }
+
+    public Property<String> titleProperty() {
+        return exerciseDefinition.titleProperty();
+    }
+
+    public void reset() {
+        setPracticedTime(0);
+        setStatus(ExerciseStatus.PLANNED);
     }
 }

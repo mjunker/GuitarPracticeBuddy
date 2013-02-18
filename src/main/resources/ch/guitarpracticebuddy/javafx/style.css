@@ -1,11 +1,11 @@
-.toggle-button {
+.toggle-button#tagButton {
 
     -fx-background-color: null;
     -fx-effect: null;
     -fx-text-fill: gray;
 }
 
-.toggle-button:selected {
+.toggle-button#tagButton:selected {
 
     -fx-text-fill: black;
 }
