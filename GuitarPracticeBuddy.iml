@@ -25,15 +25,7 @@
     <orderEntry type="library" name="Maven: com.objectdb:objectdb:2.2.5" level="project" />
     <orderEntry type="library" name="Maven: jgoodies:forms:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:14.0-rc1" level="project" />
-    <orderEntry type="library" name="Maven: com.intellij:forms_rt:5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-labs:2.2-r5-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context:3.0.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-aop:3.0.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-asm:3.0.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-beans:3.0.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-core:3.0.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-expression:3.0.6.RELEASE" level="project" />
   </component>
 </module>
 

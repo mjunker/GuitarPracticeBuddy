@@ -94,10 +94,6 @@ public class PlanningTree extends TreeView {
         return selectedPracticeWeek;
     }
 
-    public ExerciseDefinition getSelectedExerciseDefinition() {
-        return selectedExerciseDefinition;
-    }
-
     public void setTagFilter(List<Tag> selectedTags) {
         this.selectedTags = selectedTags;
         filter();

@@ -85,7 +85,7 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
             @Override
             public void handle(ActionEvent actionEvent) {
                 ExerciseDefinition newExerciseDefinition = PracticeBuddyBean.getInstance().createNewExerciseDefinition();
-                ALL_EXERCISES_NODE.getChildren().add(new TreeItem<>(newExerciseDefinition));
+                ALL_EXERCISES_NODE.getChildren().add(0, new TreeItem<>(newExerciseDefinition));
 
             }
         });
@@ -112,11 +112,13 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
         setOnDragOver(new EventHandler<DragEvent>() {
             public void handle(DragEvent dragEvent) {
 
-                ExerciseDefinitionTreeCell source = (ExerciseDefinitionTreeCell) dragEvent.getGestureSource();
-                if (!alreadyContainsNode(source)) {
-                    dragEvent.acceptTransferModes(TransferMode.COPY);
-                    dragEvent.consume();
+                if (dragEvent.getGestureSource() instanceof ExerciseDefinitionTreeCell) {
+                    ExerciseDefinitionTreeCell source = (ExerciseDefinitionTreeCell) dragEvent.getGestureSource();
+                    if (!alreadyContainsNode(source)) {
+                        dragEvent.acceptTransferModes(TransferMode.COPY);
+                        dragEvent.consume();
 
+                    }
                 }
 
             }
