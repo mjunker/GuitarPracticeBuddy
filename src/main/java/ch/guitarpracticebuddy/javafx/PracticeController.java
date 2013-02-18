@@ -70,25 +70,29 @@ public class PracticeController implements Initializable {
             scrollPane.setFitToHeight(true);
             scrollPane.setFitToWidth(true);
 
-            final Pagination pagination = PaginationBuilder.create().pageCount(exerciseDefinition.getAttachments().size()).pageFactory(new Callback<Integer, Node>() {
-                @Override
-                public Node call(Integer pageIndex) {
+            if (!exerciseDefinition.getAttachments().isEmpty()) {
 
-                    VBox box = new VBox();
-                    Image image = FileUtil.loadImage(exerciseDefinition, exerciseDefinition.getAttachments().get(pageIndex));
-                    ImageView iv = new ImageView(image);
-                    iv.setPreserveRatio(true);
-                    iv.setFitHeight(IMAGE_WIDTH);
-                    box.setAlignment(Pos.CENTER);
-                    box.getChildren().add(iv);
-                    return box;
-                }
-            }).build();
-            pagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
-            VBox.setVgrow(scrollPane, Priority.ALWAYS);
-            scrollPane.setContent(pagination);
+                final Pagination pagination = PaginationBuilder.create().pageCount(exerciseDefinition.getAttachments().size()).pageFactory(new Callback<Integer, Node>() {
+                    @Override
+                    public Node call(Integer pageIndex) {
 
-            practiceContentPanel.getChildren().add(scrollPane);
+                        VBox box = new VBox();
+                        Image image = FileUtil.loadImage(exerciseDefinition, exerciseDefinition.getAttachments().get(pageIndex));
+                        ImageView iv = new ImageView(image);
+                        iv.setPreserveRatio(true);
+                        iv.setFitHeight(IMAGE_WIDTH);
+                        box.setAlignment(Pos.CENTER);
+                        box.getChildren().add(iv);
+                        return box;
+                    }
+                }).build();
+                pagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+                VBox.setVgrow(scrollPane, Priority.ALWAYS);
+                scrollPane.setContent(pagination);
+
+                practiceContentPanel.getChildren().add(scrollPane);
+            }
+
         }
 
     }

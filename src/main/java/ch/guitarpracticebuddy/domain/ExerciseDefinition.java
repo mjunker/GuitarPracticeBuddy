@@ -121,8 +121,8 @@ public class ExerciseDefinition {
     }
 
     public void setTags(List<Tag> tags) {
-        this.tags = tags;
-        tagsProperty.set(FXCollections.observableArrayList(tags));
+        this.tags = new ArrayList<>(tags);
+        tagsProperty().set(FXCollections.observableArrayList(tags));
     }
 
     public Rating getRating() {

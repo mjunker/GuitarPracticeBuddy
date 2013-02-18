@@ -1,0 +1,12 @@
+.toggle-button {
+
+    -fx-background-color: null;
+    -fx-effect: null;
+    -fx-text-fill: gray;
+}
+
+.toggle-button:selected {
+
+    -fx-text-fill: black;
+}
+

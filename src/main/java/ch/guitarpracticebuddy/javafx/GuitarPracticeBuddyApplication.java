@@ -36,7 +36,10 @@ public class GuitarPracticeBuddyApplication extends Application {
         Parent root = new FxmlLoader().load("guitarpracticebuddy.fxml");
 
         stage.setTitle("Guitar Practice Buddy");
-        stage.setScene(new Scene(root, 1070, Screen.getPrimary().getBounds().getHeight()));
+
+        Scene scene = new Scene(root, 1070, Screen.getPrimary().getBounds().getHeight());
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        stage.setScene(scene);
         stage.show();
 
     }

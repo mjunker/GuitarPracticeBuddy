@@ -60,25 +60,23 @@ public class ExerciseDefinitionFormController implements Initializable {
 
                 List<File> files = fileChooser.showOpenMultipleDialog(null);
                 if (files != null) {
-                    appendFiles(files);
+                    List<String> relativePaths = FileUtil.copyFilesToApplicationHome(files, exerciseDefinition);
+                    exerciseDefinition.setAttachmentsAsString(ExerciseDefinition.createAttachmentString(relativePaths));
                 }
             }
         });
     }
 
-    private void appendFiles(List<File> selectedFiles) {
-        List<String> relativePaths = FileUtil.copyFilesToApplicationHome(selectedFiles, exerciseDefinition);
-        filesField.setText(ExerciseDefinition.createAttachmentString(relativePaths));
-
-    }
-
     private void initTagField() {
+        tagField.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         tagField.setItems(FXCollections.observableArrayList(PracticeBuddyBean.getInstance().getTags()));
 
         tagField.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object o, Object o2) {
-                exerciseDefinition.setTags(tagField.getItems());
+                if (exerciseDefinition != null) {
+                    exerciseDefinition.setTags(tagField.getSelectionModel().getSelectedItems());
+                }
             }
         });
 
@@ -87,36 +85,44 @@ public class ExerciseDefinitionFormController implements Initializable {
     public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {
         bindFields(this.exerciseDefinition, exerciseDefinition);
         this.exerciseDefinition = exerciseDefinition;
-        updateTags();
 
     }
 
     private void bindFields(ExerciseDefinition oldValue, ExerciseDefinition newValue) {
 
         if (oldValue != null) {
-            Bindings.unbindBidirectional(minutesField.textProperty(), oldValue.minutesProperty());
-            Bindings.unbindBidirectional(bpmField.textProperty(), oldValue.bpmProperty());
-            Bindings.unbindBidirectional(filesField.textProperty(), oldValue.attachmentsAsStringProperty());
-            Bindings.unbindBidirectional(titleField.textProperty(), oldValue.titleProperty());
-            Bindings.unbindBidirectional(descriptionField.textProperty(), oldValue.descriptionProperty());
-            Bindings.unbindBidirectional(ratingField.valueProperty(), oldValue.ratingProperty());
+            unbind(oldValue);
         }
-
+        this.exerciseDefinition = null;
+        updateTags(newValue);
         if (newValue != null) {
-            Bindings.bindBidirectional(minutesField.textProperty(), newValue.minutesProperty(), (StringConverter) new IntegerStringConverter());
-            Bindings.bindBidirectional(bpmField.textProperty(), newValue.bpmProperty(), (StringConverter) new IntegerStringConverter());
-            Bindings.bindBidirectional(filesField.textProperty(), newValue.attachmentsAsStringProperty());
-            Bindings.bindBidirectional(titleField.textProperty(), newValue.titleProperty());
-            Bindings.bindBidirectional(descriptionField.textProperty(), newValue.descriptionProperty());
-            Bindings.bindBidirectional(ratingField.valueProperty(), newValue.ratingProperty());
+            bind(newValue);
         }
 
+    }
+
+    private void unbind(ExerciseDefinition oldValue) {
+        Bindings.unbindBidirectional(minutesField.textProperty(), oldValue.minutesProperty());
+        Bindings.unbindBidirectional(bpmField.textProperty(), oldValue.bpmProperty());
+        Bindings.unbindBidirectional(filesField.textProperty(), oldValue.attachmentsAsStringProperty());
+        Bindings.unbindBidirectional(titleField.textProperty(), oldValue.titleProperty());
+        Bindings.unbindBidirectional(descriptionField.textProperty(), oldValue.descriptionProperty());
+        Bindings.unbindBidirectional(ratingField.valueProperty(), oldValue.ratingProperty());
+    }
+
+    private void bind(ExerciseDefinition newValue) {
+        Bindings.bindBidirectional(minutesField.textProperty(), newValue.minutesProperty(), (StringConverter) new IntegerStringConverter());
+        Bindings.bindBidirectional(bpmField.textProperty(), newValue.bpmProperty(), (StringConverter) new IntegerStringConverter());
+        Bindings.bindBidirectional(filesField.textProperty(), newValue.attachmentsAsStringProperty());
+        Bindings.bindBidirectional(titleField.textProperty(), newValue.titleProperty());
+        Bindings.bindBidirectional(descriptionField.textProperty(), newValue.descriptionProperty());
+        Bindings.bindBidirectional(ratingField.valueProperty(), newValue.ratingProperty());
     }
 
     private int[] getIndices(List<Tag> tags) {
         List<Integer> indices = new ArrayList<>();
         for (Tag tag : tags) {
-            indices.add(practiceBuddyBean.getTags().indexOf(tag));
+            indices.add(tagField.getItems().indexOf(tag));
         }
 
         return toIntArray(indices);
@@ -131,37 +137,15 @@ public class ExerciseDefinitionFormController implements Initializable {
         return intArr;
     }
 
-    private void updateTags() {
+    private void updateTags(ExerciseDefinition exerciseDefinition) {
 
+        this.tagField.getSelectionModel().clearSelection();
         if (exerciseDefinition != null && !exerciseDefinition.getTags().isEmpty()) {
-            List<Tag> tags = this.practiceBuddyBean.getTags();
             int[] selectedIndices = getIndices(exerciseDefinition.getTags());
-            sortTags(tags, selectedIndices);
-            this.tagField.setItems(FXCollections.observableArrayList(tags));
-            this.tagField.getSelectionModel().selectIndices(-1, toIntArray(createIndices()));
-        } else {
-            this.tagField.getSelectionModel().clearSelection();
-
+            this.tagField.getSelectionModel().selectIndices(selectedIndices[0], selectedIndices);
         }
 
     }
 
-    private List<Integer> createIndices() {
-
-        List<Integer> indices = new ArrayList<>();
-        int i = 0;
-        for (Tag ignored : exerciseDefinition.getTags()) {
-            indices.add(i);
-            i++;
-        }
-        return indices;
-    }
-
-    private void sortTags(List<Tag> tags, int[] selectedIndizes) {
-        for (int selectedIndices : selectedIndizes) {
-            Tag removedTag = tags.remove(selectedIndices);
-            tags.add(0, removedTag);
-        }
-    }
 
 }

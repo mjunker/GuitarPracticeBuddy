@@ -4,6 +4,7 @@ import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.PracticeWeek;
 import com.google.common.base.Joiner;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -46,13 +47,11 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
 
         } else if (object instanceof PracticeWeek) {
             this.practiceWeek = (PracticeWeek) object;
-            // TODO
-            // this.textProperty().bind(this.practiceWeek.titleProperty());
-            setText(createPracticeWeekString(this.practiceWeek));
+            this.textProperty().bind(new SimpleStringProperty(createPracticeWeekString(this.practiceWeek)));
             initDropListener();
 
         } else {
-            setText((String) object);
+            this.textProperty().bind(new SimpleStringProperty((String) object));
             if (PRACTICE_PLAN_ROOT_NODE.equals(getTreeItem())) {
                 setContextMenu(createPracticePlanRootMenu());
             } else if (ALL_EXERCISES_NODE.equals(getTreeItem())) {

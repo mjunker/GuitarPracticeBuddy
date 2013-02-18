@@ -24,16 +24,24 @@ public class PlanningTree extends TreeView {
     private PracticeBuddyBean practiceBuddyBean;
     private List<Tag> selectedTags = new ArrayList<>();
     private TreeItem root = new TreeItem();
-    ;
+
 
     public PlanningTree() {
+        initTreeModel();
         addSelectionListener();
         addKeyListener();
         configure();
     }
 
-    private void configure() {
+    private void initTreeModel() {
+
+        root.getChildren().add(ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE);
+        root.getChildren().add(ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE);
         setRoot(root);
+
+    }
+
+    private void configure() {
         setShowRoot(false);
         getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         setCellFactory(new Callback<TreeView, TreeCell>() {
@@ -96,6 +104,7 @@ public class PlanningTree extends TreeView {
         buildTree();
     }
 
+
     public void refresh() {
         buildTree();
     }
@@ -147,18 +156,12 @@ public class PlanningTree extends TreeView {
 
     private void buildTree() {
 
-        root.getChildren().add(ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE);
-        root.getChildren().add(ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE);
+        ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE.getChildren().clear();
+        ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE.getChildren().clear();
+
 
         addPracticePlanModels(ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE);
         addAllExcercisesModels(ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE);
-        setRoot(root);
-        expandAllRows();
-    }
-
-    private void expandAllRows() {
-
-        // TODO
     }
 
     private void addAllExcercisesModels(TreeItem rootNode) {
