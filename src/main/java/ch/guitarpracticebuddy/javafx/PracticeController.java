@@ -183,8 +183,10 @@ public class PracticeController implements Initializable {
         if (oldValue != null) {
             Bindings.unbindBidirectional(ratingBox.valueProperty(), oldValue.ratingProperty());
             Bindings.unbindBidirectional(bpmSlider.maxProperty(), oldValue.bpmProperty());
-            Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
-            Bindings.unbindBidirectional(bpmLabel.textProperty(), oldValue.getTodaysExercises().bpmProperty());
+            if (oldValue.getTodaysExercises() != null) {
+                Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
+                Bindings.unbindBidirectional(bpmLabel.textProperty(), oldValue.getTodaysExercises().bpmProperty());
+            }
             progressBar.progressProperty().unbind();
         }
 

@@ -62,6 +62,8 @@ public class ExerciseDefinition {
                 .join(paths);
     }
 
+    // TODO replace with better solution
+    @Deprecated
     public ExerciseInstance getTodaysExercises() {
         return selectFirst(plannedInstances,
                 having(on(ExerciseInstance.class).isForToday(), equalTo(true)));
