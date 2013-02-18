@@ -36,5 +36,9 @@
 
 }
 
+.progress-indicator {
+    -fx-progress-color: #4cb42f
+}
+
 
 

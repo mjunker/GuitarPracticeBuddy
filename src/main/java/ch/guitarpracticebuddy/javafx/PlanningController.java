@@ -88,6 +88,7 @@ public class PlanningController implements Initializable {
     private void initWeekOverviewTable() {
 
         TableColumn title = new TableColumn("Title");
+        title.setMinWidth(150);
         title.setEditable(false);
         weekOverviewTable.getColumns().add(title);
         title.setCellValueFactory(new PropertyValueFactory("title"));
