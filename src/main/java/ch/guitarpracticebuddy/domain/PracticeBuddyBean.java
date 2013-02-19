@@ -48,12 +48,26 @@ public class PracticeBuddyBean {
     private void init() {
         this.practiceWeeks = loadPracticePlans(em);
         this.exerciseDefinitions = loadExcerciseDefs(em);
+        fixRelations();
+        this.tags = loadTags();
+    }
+
+    // TODO remove once migrated
+    @Deprecated
+    private void fixRelations() {
         for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
             for (ExerciseInstance exerciseInstance : exerciseDefinition.getPlannedInstances()) {
                 exerciseInstance.setExerciseDefinition(exerciseDefinition);
+
+            }
+            if (exerciseDefinition.getBpm() == 0) {
+                exerciseDefinition.setBpm(120);
+            }
+            if (exerciseDefinition.getMinutes() == 0) {
+                exerciseDefinition.setMinutes(5);
             }
         }
-        this.tags = loadTags();
+
     }
 
     private List<Tag> loadTags() {
@@ -63,7 +77,7 @@ public class PracticeBuddyBean {
     public List<ExerciseDefinition> getExerciseDefinitions(List<Tag> selectedTags) {
 
         if (selectedTags.isEmpty()) {
-            return exerciseDefinitions;
+            return new ArrayList<>(exerciseDefinitions);
         } else {
             return filterExerciseDefinitions(selectedTags);
         }
@@ -71,7 +85,7 @@ public class PracticeBuddyBean {
     }
 
     private List<ExerciseDefinition> filterExerciseDefinitions(List<Tag> selectedTags) {
-        List<ExerciseDefinition> result = new ArrayList<ExerciseDefinition>();
+        List<ExerciseDefinition> result = new ArrayList<>();
         for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
             if (exerciseDefinition.getTags().containsAll(selectedTags)) {
                 result.add(exerciseDefinition);

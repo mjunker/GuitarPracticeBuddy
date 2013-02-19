@@ -9,10 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -41,6 +38,7 @@ public class PlanningController implements Initializable {
     private ExerciseDefinitionFormController formController;
     private PracticeBuddyBean practiceBuddyBean;
     private List<Tag> selectedTags = new ArrayList<>();
+    private PracticeWeek selectedPracticeWeek;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -48,6 +46,7 @@ public class PlanningController implements Initializable {
         initForm();
         updateTagPanel();
         initPlanningTree();
+        setSelectedExerciseDefinition(null);
 
     }
 
@@ -78,15 +77,20 @@ public class PlanningController implements Initializable {
 
     private void setSelectedExerciseDefinition(ExerciseDefinition exerciseDefinition) {
         formController.setExerciseDefinition(exerciseDefinition);
+        weekOverviewTable.setVisible(exerciseDefinition != null);
+
     }
 
     private void updatePracticeWeekOverview() {
         weekOverviewTable.getColumns().clear();
 
         if (planningTree.getSelectedPracticeWeek() != null) {
-            weekOverviewTable.setItems(FXCollections.observableArrayList(planningTree.getSelectedPracticeWeek().getExerciseDefinitions()));
+            selectedPracticeWeek = planningTree.getSelectedPracticeWeek();
+            weekOverviewTable.setItems(FXCollections.observableArrayList(selectedPracticeWeek.getExerciseDefinitions()));
             initWeekOverviewTable();
         }
+        weekOverviewTable.setVisible(planningTree.getSelectedPracticeWeek() != null);
+
     }
 
     private void initWeekOverviewTable() {
@@ -103,6 +107,13 @@ public class PlanningController implements Initializable {
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<ExerciseDefinition, String>, ObservableValue<ExerciseStatus>>() {
                 public ObservableValue<ExerciseStatus> call(TableColumn.CellDataFeatures<ExerciseDefinition, String> p) {
                     return p.getValue().getExerciseForDay(localDate).statusProperty();
+                }
+            });
+            column.setCellFactory(new Callback<TableColumn, TableCell>() {
+
+                @Override
+                public TableCell call(TableColumn tableColumn) {
+                    return new StatusTableCell();
                 }
             });
             weekOverviewTable.getColumns().add(column);
@@ -148,7 +159,6 @@ public class PlanningController implements Initializable {
     }
 
     public void refresh() {
-        //To change body of created methods use File | Settings | File Templates.
     }
 
     public static class TagButton extends ToggleButton {
@@ -176,6 +186,15 @@ public class PlanningController implements Initializable {
 
         public Tag getTag() {
             return tag;
+        }
+    }
+
+    private class StatusTableCell extends TableCell<Object, ExerciseStatus> {
+
+        @Override
+        protected void updateItem(ExerciseStatus o, boolean b) {
+            super.updateItem(o, b);
+            setText(Texts.getText(o));
         }
     }
 }

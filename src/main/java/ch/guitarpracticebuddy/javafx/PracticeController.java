@@ -37,7 +37,7 @@ public class PracticeController implements Initializable {
     @FXML
     private Label bpmLabel;
     @FXML
-    private ChoiceBox ratingBox;
+    private ChoiceBox<Rating> ratingBox;
     @FXML
     private ExerciseDefinition exerciseDefinition;
     @FXML
@@ -48,6 +48,7 @@ public class PracticeController implements Initializable {
     private Button startButton;
     @FXML
     private VBox practiceContentPanel;
+
     private TimerController timerController;
     private ExerciseInstance exerciseInstance;
 
@@ -56,8 +57,10 @@ public class PracticeController implements Initializable {
 
         initRatingBox();
         initTimerController();
-        initCurrentExercises();
+        initCurrentExercisesTable();
         initButtons();
+        initCurrentExercises();
+        select(null);
 
         this.bpmSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -127,9 +130,7 @@ public class PracticeController implements Initializable {
         this.timerController = new TimerController(startButton);
     }
 
-    private void initCurrentExercises() {
-        ObservableList<ExerciseDefinition> exerciseDefinitions = FXCollections.observableArrayList(PracticeBuddyBean.getInstance().getExcercisesForToday());
-        currentExercisesTable.setItems(exerciseDefinitions);
+    private void initCurrentExercisesTable() {
         currentExercisesTable.setEditable(false);
         currentExercisesTable.setCellFactory(new Callback<ListView<ExerciseDefinition>, ListCell<ExerciseDefinition>>() {
 
@@ -145,33 +146,48 @@ public class PracticeController implements Initializable {
             }
         });
 
-        if (!exerciseDefinitions.isEmpty()) {
-            select(exerciseDefinitions.get(0));
-        }
+    }
+
+    private ObservableList<ExerciseDefinition> initCurrentExercises() {
+        ObservableList<ExerciseDefinition> exerciseDefinitions = FXCollections.observableArrayList(PracticeBuddyBean.getInstance().getExcercisesForToday());
+        currentExercisesTable.setItems(exerciseDefinitions);
+        return exerciseDefinitions;
     }
 
     private void initRatingBox() {
         ratingBox.setItems(FXCollections.observableArrayList(Rating.values()));
+        ratingBox.setConverter(new EnumToStringConverter(Rating.class));
     }
 
     private void select(ExerciseDefinition exerciseDefinition) {
 
         bind(this.exerciseDefinition, exerciseDefinition);
-
         this.exerciseDefinition = exerciseDefinition;
-        if (this.exerciseDefinition != null) {
-            this.exerciseInstance = exerciseDefinition.getTodaysExercises();
 
-        } else {
-            this.exerciseInstance = null;
-        }
+        initExerciseInstance(exerciseDefinition);
         initPracticeContent();
         updateTimerController();
+        setEnabled(this.exerciseDefinition != null);
 
-        if (this.exerciseInstance != null) {
+    }
 
+    private void setEnabled(boolean enabled) {
+        boolean disabled = !enabled;
+        this.bpmSlider.setDisable(disabled);
+        this.ratingBox.setDisable(disabled);
+        this.skipButton.setDisable(disabled);
+        this.resetButton.setDisable(disabled);
+        this.startButton.setDisable(disabled);
+        this.progressBar.setDisable(disabled);
+        this.bpmLabel.setDisable(disabled);
+
+    }
+
+    private void initExerciseInstance(ExerciseDefinition exerciseDefinition) {
+        if (this.exerciseDefinition != null) {
+            this.exerciseInstance = exerciseDefinition.getTodaysExercises();
         } else {
-            this.timerController.resetTimer();
+            this.exerciseInstance = null;
         }
     }
 
@@ -183,10 +199,8 @@ public class PracticeController implements Initializable {
         if (oldValue != null) {
             Bindings.unbindBidirectional(ratingBox.valueProperty(), oldValue.ratingProperty());
             Bindings.unbindBidirectional(bpmSlider.maxProperty(), oldValue.bpmProperty());
-            if (oldValue.getTodaysExercises() != null) {
-                Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
-                Bindings.unbindBidirectional(bpmLabel.textProperty(), oldValue.getTodaysExercises().bpmProperty());
-            }
+            Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
+            Bindings.unbindBidirectional(bpmLabel.textProperty(), oldValue.getTodaysExercises().bpmProperty());
             progressBar.progressProperty().unbind();
         }
 
@@ -203,7 +217,7 @@ public class PracticeController implements Initializable {
 
     public void refresh() {
         initCurrentExercises();
-        select(exerciseDefinition);
+        currentExercisesTable.getSelectionModel().clearSelection();
     }
 
     private class ExerciseDefinitionListCell extends ListCell<ExerciseDefinition> {
@@ -226,25 +240,21 @@ public class PracticeController implements Initializable {
         }
 
         private void setPracticeListStyle(ExerciseDefinition exerciseDefinition) {
-            getStyleClass().add("practiceList");
-
-            getStyleClass().remove("done");
-            getStyleClass().remove("skip");
-            getStyleClass().remove("planned");
+            getStyleClass().add(StyleClass.PRACTICE_LIST.getStyle());
+            getStyleClass().remove(StyleClass.DONE.getStyle());
+            getStyleClass().remove(StyleClass.SKIP.getStyle());
+            getStyleClass().remove(StyleClass.PLANNED.getStyle());
 
             switch (exerciseDefinition.getTodaysExercises().getStatus()) {
 
                 case DONE:
-                    getStyleClass().add("done");
-
+                    getStyleClass().add(StyleClass.DONE.getStyle());
                     break;
                 case SKIPPED:
-                    getStyleClass().add("skip");
-
+                    getStyleClass().add(StyleClass.SKIP.getStyle());
                     break;
                 case PLANNED:
-                    getStyleClass().add("planned");
-
+                    getStyleClass().add(StyleClass.PLANNED.getStyle());
                     break;
             }
 

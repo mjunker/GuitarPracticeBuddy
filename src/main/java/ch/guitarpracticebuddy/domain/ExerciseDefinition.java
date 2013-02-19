@@ -28,10 +28,10 @@ public class ExerciseDefinition {
     private int id;
     @Setter
     private String code;
-    private String title = "New exercise";
+    private String title;
     private String description;
-    private int minutes;
-    private int bpm;
+    private int minutes = 5;
+    private int bpm = 120;
     private Rating rating = Rating.BEGINNER;
     private List<Tag> tags = new ArrayList<>();
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -62,8 +62,6 @@ public class ExerciseDefinition {
                 .join(paths);
     }
 
-    // TODO replace with better solution
-    @Deprecated
     public ExerciseInstance getTodaysExercises() {
         return selectFirst(plannedInstances,
                 having(on(ExerciseInstance.class).isForToday(), equalTo(true)));

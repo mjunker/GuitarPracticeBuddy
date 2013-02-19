@@ -85,6 +85,7 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
             @Override
             public void handle(ActionEvent actionEvent) {
                 ExerciseDefinition newExerciseDefinition = PracticeBuddyBean.getInstance().createNewExerciseDefinition();
+                newExerciseDefinition.setTitle("New exercise");
                 ALL_EXERCISES_NODE.getChildren().add(0, new TreeItem<>(newExerciseDefinition));
 
             }

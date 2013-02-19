@@ -17,6 +17,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -40,13 +41,16 @@ public class ExerciseDefinitionFormController implements Initializable {
     @FXML
     private TextArea filesField;
     @FXML
-    private ChoiceBox ratingField;
+    private ChoiceBox<Rating> ratingField;
     @FXML
     private Button selectFilesButton;
     @FXML
     private Button previewButton;
     @FXML
     private FlowPane tagPanel;
+    @FXML
+    private GridPane exerciseDefinitionPane;
+
     private ExerciseDefinition exerciseDefinition;
     private ObservableList<Tag> selectedTags = FXCollections.observableArrayList();
 
@@ -54,6 +58,8 @@ public class ExerciseDefinitionFormController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         ratingField.setItems(FXCollections.observableArrayList(Rating.values()));
+        ratingField.setConverter(new EnumToStringConverter(Rating.class));
+
         initDropListener();
 
         selectFilesButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
@@ -71,11 +77,15 @@ public class ExerciseDefinitionFormController implements Initializable {
     }
 
     public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {
+
         bindFields(this.exerciseDefinition, exerciseDefinition);
+
         this.exerciseDefinition = exerciseDefinition;
         if (this.exerciseDefinition != null) {
             selectedTags.addAll(this.exerciseDefinition.getTags());
         }
+
+        exerciseDefinitionPane.setVisible(this.exerciseDefinition != null);
 
     }
 

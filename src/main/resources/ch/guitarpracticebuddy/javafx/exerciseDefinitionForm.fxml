@@ -8,7 +8,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<GridPane hgap="0.0" prefHeight="546.0" prefWidth="462.0" vgap="5.0" xmlns:fx="http://javafx.com/fxml"
+<GridPane fx:id="exerciseDefinitionPane" hgap="0.0" prefHeight="546.0" prefWidth="462.0" vgap="5.0"
+          xmlns:fx="http://javafx.com/fxml"
           fx:controller="ch.guitarpracticebuddy.javafx.ExerciseDefinitionFormController">
     <children>
         <Label text="Title" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.valignment="TOP">
