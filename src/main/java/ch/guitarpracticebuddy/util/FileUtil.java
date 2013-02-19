@@ -37,7 +37,7 @@ public class FileUtil {
     }
 
     private static String getExerciseDirectory(ExerciseDefinition exerciseDefinition) {
-        return EXERCISE_FOLDER_PREFIX + exerciseDefinition.getCode();
+        return EXERCISE_FOLDER_PREFIX + exerciseDefinition.getFolder();
     }
 
     private static String getApplicationHome() {

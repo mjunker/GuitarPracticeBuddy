@@ -78,10 +78,13 @@ public class ExerciseDefinition {
 
     public void createInstancesForEntireWeek(Interval interval) {
         for (LocalDate localDate : new LocalDateRange(interval)) {
-            ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
-            instance.setExerciseDefinition(this);
-            instance.setBpm(calculateInitialBpm());
-            plannedInstances.add(instance);
+            if (getExerciseForDay(localDate) == null) {
+                ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
+                instance.setExerciseDefinition(this);
+                instance.setBpm(calculateInitialBpm());
+                plannedInstances.add(instance);
+            }
+
         }
     }
 
@@ -180,6 +183,13 @@ public class ExerciseDefinition {
     public void setBpm(int bpm) {
         this.bpm = bpm;
         bpmProperty().set(bpm);
+    }
+
+    public String getFolder() {
+        if (code != null) {
+            return code;
+        }
+        return getTitle().toLowerCase().replaceAll(" ", "_").replaceAll("\\W+", "");
     }
 
     private static class IsNotInFuture extends BaseMatcher<DateTime> {
