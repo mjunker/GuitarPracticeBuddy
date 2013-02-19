@@ -48,26 +48,7 @@ public class PracticeBuddyBean {
     private void init() {
         this.practiceWeeks = loadPracticePlans(em);
         this.exerciseDefinitions = loadExcerciseDefs(em);
-        fixRelations();
         this.tags = loadTags();
-    }
-
-    // TODO remove once migrated
-    @Deprecated
-    private void fixRelations() {
-        for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
-            for (ExerciseInstance exerciseInstance : exerciseDefinition.getPlannedInstances()) {
-                exerciseInstance.setExerciseDefinition(exerciseDefinition);
-
-            }
-            if (exerciseDefinition.getBpm() == 0) {
-                exerciseDefinition.setBpm(120);
-            }
-            if (exerciseDefinition.getMinutes() == 0) {
-                exerciseDefinition.setMinutes(5);
-            }
-        }
-
     }
 
     private List<Tag> loadTags() {
