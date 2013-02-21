@@ -1,7 +1,6 @@
 package ch.guitarpracticebuddy.javafx;
 
 import ch.guitarpracticebuddy.domain.*;
-import ch.guitarpracticebuddy.util.FileUtil;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,12 +10,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Priority;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -61,14 +57,18 @@ public class PracticeController implements Initializable {
         initButtons();
         initCurrentExercises();
         select(null);
+        initBpmSlider();
 
+    }
+
+
+    private void initBpmSlider() {
         this.bpmSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
                 timerController.restartBpmTime();
             }
         });
-
     }
 
     private void initButtons() {
@@ -93,34 +93,8 @@ public class PracticeController implements Initializable {
 
     private void initPracticeContent() {
         practiceContentPanel.getChildren().clear();
-        if (exerciseDefinition != null) {
-
-            ScrollPane scrollPane = new ScrollPane();
-            scrollPane.setFitToHeight(true);
-            scrollPane.setFitToWidth(true);
-
-            if (!exerciseDefinition.getAttachments().isEmpty()) {
-
-                final Pagination pagination = PaginationBuilder.create().pageCount(exerciseDefinition.getAttachments().size()).pageFactory(new Callback<Integer, Node>() {
-                    @Override
-                    public Node call(Integer pageIndex) {
-
-                        VBox box = new VBox();
-                        Image image = FileUtil.loadImage(exerciseDefinition, exerciseDefinition.getAttachments().get(pageIndex));
-                        ImageView iv = new ImageView(image);
-                        iv.setPreserveRatio(true);
-                        iv.setFitHeight(IMAGE_WIDTH);
-                        box.setAlignment(Pos.CENTER);
-                        box.getChildren().add(iv);
-                        return box;
-                    }
-                }).build();
-                pagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
-                VBox.setVgrow(scrollPane, Priority.ALWAYS);
-                scrollPane.setContent(pagination);
-
-                practiceContentPanel.getChildren().add(scrollPane);
-            }
+        if (exerciseDefinition != null && !exerciseDefinition.getAttachments().isEmpty()) {
+            practiceContentPanel.getChildren().add(new ImagePane(exerciseDefinition));
 
         }
 
@@ -128,6 +102,10 @@ public class PracticeController implements Initializable {
 
     private void initTimerController() {
         this.timerController = new TimerController(startButton);
+    }
+
+    public void togglePlay() {
+        this.timerController.toggleTimer();
     }
 
     private void initCurrentExercisesTable() {
@@ -145,6 +123,17 @@ public class PracticeController implements Initializable {
                 select(exerciseDefinition2);
             }
         });
+
+        currentExercisesTable.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.SPACE) {
+
+                    togglePlay();
+                }
+            }
+        });
+
 
     }
 

@@ -78,6 +78,12 @@
             <artifactId>jfxtras-labs</artifactId>
             <version>2.2-r5-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>javafx</artifactId>
+            <version>2.2</version>
+        </dependency>
     </dependencies>
 
 

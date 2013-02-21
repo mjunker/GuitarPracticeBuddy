@@ -8,10 +8,12 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -19,6 +21,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -74,6 +78,23 @@ public class ExerciseDefinitionFormController implements Initializable {
                 }
             }
         });
+
+        initPreviewButton();
+    }
+
+    private void initPreviewButton() {
+
+        previewButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Stage stage = new Stage();
+                Scene scene = new Scene(new ImagePane(exerciseDefinition), 800, Screen.getPrimary().getBounds().getHeight());
+                stage.setScene(scene);
+                stage.show();
+            }
+        });
+
+
     }
 
     public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {

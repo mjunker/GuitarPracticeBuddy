@@ -33,7 +33,7 @@ public class TimerController {
         this.timer = null;
     }
 
-    private void toggleTimer() {
+    public void toggleTimer() {
 
         if (timer == null) {
             return;

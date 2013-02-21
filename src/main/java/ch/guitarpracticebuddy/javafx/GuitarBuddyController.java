@@ -50,4 +50,12 @@ public class GuitarBuddyController implements Initializable {
         });
 
     }
+
+    public PlanningController getPlanningController() {
+        return planningController;
+    }
+
+    public PracticeController getPracticeFormController() {
+        return practiceFormController;
+    }
 }

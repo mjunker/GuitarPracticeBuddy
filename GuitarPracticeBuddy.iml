@@ -26,6 +26,7 @@
     <orderEntry type="library" name="Maven: jgoodies:forms:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:14.0-rc1" level="project" />
     <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-labs:2.2-r5-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.oracle:javafx:2.2" level="project" />
   </component>
 </module>
 
