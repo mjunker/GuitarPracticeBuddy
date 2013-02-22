@@ -16,8 +16,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
-import static com.google.common.base.Strings.repeat;
-
 public class ExerciseDefinitionTreeCell extends TreeCell {
 
     public static final TreeItem PRACTICE_PLAN_ROOT_NODE = new TreeItem("Practice Plans");
@@ -43,6 +41,8 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
     @Override
     protected void updateItem(Object object, boolean b) {
         super.updateItem(object, b);
+        this.textProperty().unbind();
+
         if (object instanceof ExerciseDefinition) {
             this.exerciseDefinition = (ExerciseDefinition) object;
             this.textProperty().bind(this.exerciseDefinition.titleProperty());
@@ -155,16 +155,6 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
                 + " " + createTimeString(practiceWeek) + "";
     }
 
-    public String createExerciseDefinitionString(ExerciseDefinition exerciseDefinition) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(exerciseDefinition.getTitle());
-        if (exerciseDefinition.getRating() != null && exerciseDefinition.getRating().getLevel() > 0) {
-            sb.append(" ");
-            sb.append(repeat("*", exerciseDefinition.getRating().getLevel()));
-        }
-        return sb.toString();
-    }
-
     private String createTimeString(PracticeWeek practiceWeek) {
         int timeInMinutes = practiceWeek.calculateTotalMinutes();
         int hours = timeInMinutes / 60;
@@ -186,9 +176,5 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
 
     public ExerciseDefinition getExerciseDefinition() {
         return exerciseDefinition;
-    }
-
-    public PracticeWeek getPracticeWeek() {
-        return practiceWeek;
     }
 }

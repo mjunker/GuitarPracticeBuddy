@@ -18,7 +18,6 @@ public class SoundUtil {
 
     public static void playSound(SoundFile soundFile) {
         try {
-
             loadClip(soundFile).start();
         } catch (Exception e) {
             System.err.println(e.getMessage());

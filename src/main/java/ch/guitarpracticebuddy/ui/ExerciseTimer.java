@@ -16,11 +16,12 @@ public class ExerciseTimer {
     public static final int INTERVAL = 50;
     private final ExerciseInstance exerciseInstance;
     private Timeline timer;
-    private Timeline bpmTimer;
     private int currentTime = 0;
     private int bpm = 100;
     private boolean metronomeEnabled = true;
     private final TimerController timerController;
+    private Thread thread;
+    private Runnable runnable;
 
     public ExerciseTimer(final ExerciseInstance exerciseInstance, TimerController timerController) {
 
@@ -35,40 +36,40 @@ public class ExerciseTimer {
 
     private void initBpmTimer() {
 
-        bpmTimer = new Timeline(new KeyFrame(Duration.millis(exerciseInstance.getClickIntervalInMs()), new EventHandler<ActionEvent>() {
-
+        runnable = new Runnable() {
             @Override
-            public void handle(ActionEvent event) {
-                if (metronomeEnabled) {
-                    SoundUtil.playSound(SoundFile.CLICK);
-                }
-            }
-        }));
-        bpmTimer.setCycleCount(Timeline.INDEFINITE);
+            public void run() {
+                while (isRunning()) {
+                    if (metronomeEnabled) {
+                        SoundUtil.playSound(SoundFile.CLICK);
+                    }
+                    try {
+                        Thread.sleep(exerciseInstance.getClickIntervalInMs());
+                    } catch (InterruptedException e) {
 
+                    }
+                }
+
+            }
+        };
     }
 
     public void start() {
-        this.bpmTimer.play();
+
         this.timer.play();
+        thread = new Thread(runnable);
+        thread.setPriority(Thread.MAX_PRIORITY);
+        thread.start();
     }
 
     public void stop() {
 
-        this.bpmTimer.stop();
         this.timer.stop();
 
     }
 
     public void restartBpmTimer() {
-        if (this.bpmTimer != null) {
-            this.bpmTimer.stop();
 
-        }
-        initBpmTimer();
-        if (isRunning()) {
-            bpmTimer.play();
-        }
     }
 
     public ExerciseInstance getExerciseInstance() {
