@@ -9,7 +9,10 @@ package ch.guitarpracticebuddy.domain;
  */
 public enum Rating {
 
-    MASTER(3), GOOD(2), ADVANCING(1), BEGINNER(0);
+    BEGINNER(0),
+    ADVANCING(1),
+    GOOD(2),
+    MASTER(3);
 
     private final int level;
 
@@ -21,12 +24,4 @@ public enum Rating {
         return level;
     }
 
-    public static Rating fromValue(int value) {
-        for (Rating rating : Rating.values()) {
-            if (rating.getLevel() == value) {
-                return rating;
-            }
-        }
-        throw new IllegalArgumentException("No Rating found for value=" + value);
-    }
 }

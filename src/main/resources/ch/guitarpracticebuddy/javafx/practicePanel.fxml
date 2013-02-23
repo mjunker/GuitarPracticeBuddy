@@ -46,8 +46,6 @@
                                     </children>
                                 </HBox>
                                 <Slider fx:id="bpmSlider" layoutX="57.0" layoutY="35.0" prefWidth="90.0"/>
-                                <Label fx:id="bpmLabel" layoutX="154.0" layoutY="35.0" text="Label"
-                                       textAlignment="RIGHT"/>
                                 <ChoiceBox fx:id="ratingBox" layoutX="57.0" layoutY="60.0" prefWidth="129.0">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
@@ -57,6 +55,8 @@
                                         </FXCollections>
                                     </items>
                                 </ChoiceBox>
+                                <ToggleButton fx:id="bpmButton" layoutX="149.0" layoutY="31.0" minWidth="33.0"
+                                              mnemonicParsing="false" prefWidth="46.0" text="ToggleButton"/>
                             </children>
                         </AnchorPane>
                         <ListView fx:id="currentExercisesTable" prefHeight="200.0" prefWidth="200.0"

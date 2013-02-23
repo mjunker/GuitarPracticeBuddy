@@ -20,7 +20,6 @@ public class ExerciseTimer {
     private int bpm = 100;
     private boolean metronomeEnabled = true;
     private final TimerController timerController;
-    private Thread thread;
     private Runnable runnable;
 
     public ExerciseTimer(final ExerciseInstance exerciseInstance, TimerController timerController) {
@@ -57,7 +56,7 @@ public class ExerciseTimer {
     public void start() {
 
         this.timer.play();
-        thread = new Thread(runnable);
+        Thread thread = new Thread(runnable);
         thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();
     }
@@ -68,8 +67,8 @@ public class ExerciseTimer {
 
     }
 
-    public void restartBpmTimer() {
-
+    public void setMetronomeEnabled(boolean metronomeEnabled) {
+        this.metronomeEnabled = metronomeEnabled;
     }
 
     public ExerciseInstance getExerciseInstance() {

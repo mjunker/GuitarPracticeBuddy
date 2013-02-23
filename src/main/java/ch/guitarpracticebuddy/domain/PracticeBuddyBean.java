@@ -55,24 +55,17 @@ public class PracticeBuddyBean {
         return em.createQuery("SELECT t FROM Tag t ORDER BY t.name", Tag.class).getResultList();
     }
 
-    public List<ExerciseDefinition> getExerciseDefinitions(List<Tag> selectedTags) {
+    public List<ExerciseDefinition> getExerciseDefinitions(List<Tag> selectedTags, List<Rating> selectedRatings) {
 
-        if (selectedTags.isEmpty()) {
-            return new ArrayList<>(exerciseDefinitions);
-        } else {
-            return filterExerciseDefinitions(selectedTags);
-        }
-
-    }
-
-    private List<ExerciseDefinition> filterExerciseDefinitions(List<Tag> selectedTags) {
         List<ExerciseDefinition> result = new ArrayList<>();
         for (ExerciseDefinition exerciseDefinition : exerciseDefinitions) {
-            if (exerciseDefinition.getTags().containsAll(selectedTags)) {
+            if ((selectedTags.isEmpty() || exerciseDefinition.getTags().containsAll(selectedTags)) && (selectedRatings.isEmpty()
+                    || selectedRatings.contains(exerciseDefinition.getRating()))) {
                 result.add(exerciseDefinition);
             }
         }
         return result;
+
     }
 
     public PracticeWeek getPracticePlanForToday() {

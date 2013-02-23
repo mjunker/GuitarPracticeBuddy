@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -35,10 +36,13 @@ public class PlanningController implements Initializable {
     private FlowPane tagPanel;
     @FXML
     private PlanningTree planningTree;
+    @FXML
+    private FlowPane ratingFilterPane;
     private ExerciseDefinitionFormController formController;
     private PracticeBuddyBean practiceBuddyBean;
     private List<Tag> selectedTags = new ArrayList<>();
     private PracticeWeek selectedPracticeWeek;
+    private List<Rating> selectedRatings = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,8 +50,15 @@ public class PlanningController implements Initializable {
         initForm();
         updateTagPanel();
         initPlanningTree();
+        initRatingFilterPane();
         setSelectedExerciseDefinition(null);
 
+    }
+
+    private void initRatingFilterPane() {
+        for (Rating rating : Rating.values()) {
+            ratingFilterPane.getChildren().add(createRatingFilterButton(rating));
+        }
     }
 
     private LocalDateRange getColumnRange() {
@@ -76,9 +87,14 @@ public class PlanningController implements Initializable {
     }
 
     private void setSelectedExerciseDefinition(ExerciseDefinition exerciseDefinition) {
-        formController.setExerciseDefinition(exerciseDefinition);
-        weekOverviewTable.setVisible(exerciseDefinition != null);
 
+        formController.setExerciseDefinition(exerciseDefinition);
+        refreshWeekOverviewTable();
+
+    }
+
+    private void refreshWeekOverviewTable() {
+        weekOverviewTable.setVisible(planningTree.getSelectedPracticeWeek() != null);
     }
 
     private void updatePracticeWeekOverview() {
@@ -89,7 +105,7 @@ public class PlanningController implements Initializable {
             weekOverviewTable.setItems(FXCollections.observableArrayList(selectedPracticeWeek.getExerciseDefinitions()));
             initWeekOverviewTable();
         }
-        weekOverviewTable.setVisible(planningTree.getSelectedPracticeWeek() != null);
+        refreshWeekOverviewTable();
 
     }
 
@@ -146,8 +162,20 @@ public class PlanningController implements Initializable {
         filterExercises();
     }
 
+    private void toggleRatingSelected(Rating rating) {
+        if (this.selectedRatings.contains(rating)) {
+            this.selectedRatings.remove(rating);
+        } else {
+            this.selectedRatings.add(rating);
+        }
+        filterExercises();
+    }
+
     private void filterExercises() {
-        planningTree.setTagFilter(selectedTags);
+
+        planningTree.getSelectionModel().clearSelection();
+        setSelectedExerciseDefinition(null);
+        planningTree.setFilter(selectedTags, selectedRatings);
     }
 
     private void initForm() {
@@ -161,8 +189,30 @@ public class PlanningController implements Initializable {
     public void refresh() {
     }
 
+    private Node createRatingFilterButton(final Rating rating) {
+        final RatingToggleButton ratingToggleButton = new RatingToggleButton(rating);
+        ratingToggleButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                toggleRatingSelected(rating);
+            }
+
+        });
+        return ratingToggleButton;
+    }
+
+    private static class RatingToggleButton extends ToggleButton {
+
+        private RatingToggleButton(Rating rating) {
+            setText(Texts.getText(rating));
+            setId("ratingButton");
+        }
+
+    }
+
     public static class TagButton extends ToggleButton {
-        private Tag tag;
+
+        private final Tag tag;
 
         private TagButton(Tag tag) {
             this.tag = tag;

@@ -1,9 +1,6 @@
 package ch.guitarpracticebuddy.javafx;
 
-import ch.guitarpracticebuddy.domain.ExerciseDefinition;
-import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
-import ch.guitarpracticebuddy.domain.PracticeWeek;
-import ch.guitarpracticebuddy.domain.Tag;
+import ch.guitarpracticebuddy.domain.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -24,6 +21,7 @@ public class PlanningTree extends TreeView {
     private PracticeBuddyBean practiceBuddyBean;
     private List<Tag> selectedTags = new ArrayList<>();
     private TreeItem root = new TreeItem();
+    private List<Rating> selectedRatings = new ArrayList<>();
 
     public PlanningTree() {
         initTreeModel();
@@ -94,9 +92,11 @@ public class PlanningTree extends TreeView {
         return selectedPracticeWeek;
     }
 
-    public void setTagFilter(List<Tag> selectedTags) {
+    public void setFilter(List<Tag> selectedTags, List<Rating> selectedRatings) {
         this.selectedTags = selectedTags;
+        this.selectedRatings = selectedRatings;
         filter();
+
     }
 
     private void filter() {
@@ -162,7 +162,7 @@ public class PlanningTree extends TreeView {
     }
 
     private void addAllExcercisesModels(TreeItem rootNode) {
-        for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExerciseDefinitions(selectedTags)) {
+        for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExerciseDefinitions(selectedTags, selectedRatings)) {
             TreeItem node = createExcerciseDefNode(exerciseDefinition);
             rootNode.getChildren().add(node);
         }
@@ -197,4 +197,5 @@ public class PlanningTree extends TreeView {
         this.practiceBuddyBean = practiceBuddyBean;
         refresh();
     }
+
 }

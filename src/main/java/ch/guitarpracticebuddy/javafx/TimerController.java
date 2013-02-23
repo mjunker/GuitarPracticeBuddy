@@ -11,6 +11,7 @@ public class TimerController {
     private ButtonBase startButton;
     private ExerciseTimer timer;
     private ExerciseInstance exerciseInstance;
+    private boolean metronomeEnabled;
 
     public TimerController(ButtonBase startButton) {
         this.startButton = startButton;
@@ -20,17 +21,6 @@ public class TimerController {
                 toggleTimer();
             }
         });
-    }
-
-    public void restartBpmTime() {
-        if (this.timer != null) {
-            this.timer.restartBpmTimer();
-        }
-    }
-
-    public void resetTimer() {
-        stopTimer();
-        this.timer = null;
     }
 
     public void toggleTimer() {
@@ -78,8 +68,15 @@ public class TimerController {
         if (exerciseInstance != null && (timer == null
                 || !timer.getExerciseInstance().equals(exerciseInstance))) {
             timer = new ExerciseTimer(exerciseInstance, this);
+            timer.setMetronomeEnabled(metronomeEnabled);
 
         }
     }
 
+    public void setMetronomeEnabled(boolean metronomeEnabled) {
+        if (timer != null) {
+            this.timer.setMetronomeEnabled(metronomeEnabled);
+        }
+        this.metronomeEnabled = metronomeEnabled;
+    }
 }

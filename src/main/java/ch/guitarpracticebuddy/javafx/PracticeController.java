@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 
 public class PracticeController implements Initializable {
 
-    public static final int IMAGE_WIDTH = 1100;
     @FXML
     private ProgressIndicator progressBar;
     @FXML
@@ -31,7 +30,7 @@ public class PracticeController implements Initializable {
     @FXML
     private Slider bpmSlider;
     @FXML
-    private Label bpmLabel;
+    private ToggleButton bpmButton;
     @FXML
     private ChoiceBox<Rating> ratingBox;
     @FXML
@@ -57,18 +56,19 @@ public class PracticeController implements Initializable {
         initButtons();
         initCurrentExercises();
         select(null);
-        initBpmSlider();
+        initBpmButton();
 
     }
 
-
-    private void initBpmSlider() {
-        this.bpmSlider.valueProperty().addListener(new ChangeListener<Number>() {
+    private void initBpmButton() {
+        bpmButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                timerController.restartBpmTime();
+            public void handle(ActionEvent actionEvent) {
+                timerController.setMetronomeEnabled(bpmButton.isSelected());
             }
         });
+        bpmButton.setId("bpmButton");
+
     }
 
     private void initButtons() {
@@ -134,7 +134,6 @@ public class PracticeController implements Initializable {
             }
         });
 
-
     }
 
     private ObservableList<ExerciseDefinition> initCurrentExercises() {
@@ -168,7 +167,7 @@ public class PracticeController implements Initializable {
         this.resetButton.setDisable(disabled);
         this.startButton.setDisable(disabled);
         this.progressBar.setDisable(disabled);
-        this.bpmLabel.setDisable(disabled);
+        this.bpmButton.setDisable(disabled);
 
     }
 
@@ -189,7 +188,7 @@ public class PracticeController implements Initializable {
             Bindings.unbindBidirectional(ratingBox.valueProperty(), oldValue.ratingProperty());
             Bindings.unbindBidirectional(bpmSlider.maxProperty(), oldValue.bpmProperty());
             Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
-            Bindings.unbindBidirectional(bpmLabel.textProperty(), oldValue.getTodaysExercises().bpmProperty());
+            Bindings.unbindBidirectional(bpmButton.textProperty(), oldValue.getTodaysExercises().bpmProperty());
             progressBar.progressProperty().unbind();
         }
 
@@ -197,7 +196,7 @@ public class PracticeController implements Initializable {
             Bindings.bindBidirectional(ratingBox.valueProperty(), newValue.ratingProperty());
             Bindings.bindBidirectional(bpmSlider.maxProperty(), newValue.bpmProperty());
             Bindings.bindBidirectional(bpmSlider.valueProperty(), newValue.getTodaysExercises().bpmProperty());
-            Bindings.bindBidirectional(bpmLabel.textProperty(), newValue.getTodaysExercises().bpmProperty(), (StringConverter) new IntegerStringConverter());
+            Bindings.bindBidirectional(bpmButton.textProperty(), newValue.getTodaysExercises().bpmProperty(), (StringConverter) new IntegerStringConverter());
             progressBar.progressProperty().bind(newValue.getTodaysExercises().practiceTimeProgressProperty());
 
         }
