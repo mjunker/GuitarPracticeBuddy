@@ -55,8 +55,9 @@
                                         </FXCollections>
                                     </items>
                                 </ChoiceBox>
-                                <ToggleButton fx:id="bpmButton" layoutX="149.0" layoutY="31.0" minWidth="33.0"
-                                              mnemonicParsing="false" prefWidth="46.0" text="ToggleButton"/>
+                                <ToggleButton fx:id="bpmButton" graphicTextGap="2.0" layoutX="147.0" layoutY="31.0"
+                                              minWidth="33.0" mnemonicParsing="false" prefWidth="47.999900000002526"
+                                              text="" textOverrun="CLIP"/>
                             </children>
                         </AnchorPane>
                         <ListView fx:id="currentExercisesTable" prefHeight="200.0" prefWidth="200.0"
