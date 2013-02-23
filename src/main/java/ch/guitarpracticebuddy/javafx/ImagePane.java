@@ -11,14 +11,20 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.SwipeEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ImagePane extends ScrollPane {
     public static final int IMAGE_WIDTH = 1100;
     private final ExerciseDefinition exerciseDefinition;
+
+    private List<ImageView> images = new ArrayList<>();
 
 
     public ImagePane(ExerciseDefinition def) {
@@ -35,6 +41,7 @@ public class ImagePane extends ScrollPane {
                 ImageView iv = new ImageView(image);
                 iv.setPreserveRatio(true);
                 iv.setFitHeight(IMAGE_WIDTH);
+                images.add(iv);
                 box.setAlignment(Pos.CENTER);
                 box.getChildren().add(iv);
                 return box;
@@ -56,6 +63,15 @@ public class ImagePane extends ScrollPane {
             @Override
             public void handle(SwipeEvent event) {
                 pagination.setCurrentPageIndex(pagination.getCurrentPageIndex() - 1);
+                event.consume();
+            }
+        });
+        setOnZoom(new EventHandler<ZoomEvent>() {
+            @Override
+            public void handle(ZoomEvent event) {
+                ImageView imageView = images.get(pagination.getCurrentPageIndex());
+                // TODO zoom
+
                 event.consume();
             }
         });

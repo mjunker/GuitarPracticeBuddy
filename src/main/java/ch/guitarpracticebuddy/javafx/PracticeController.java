@@ -10,9 +10,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -43,6 +45,8 @@ public class PracticeController implements Initializable {
     private Button startButton;
     @FXML
     private VBox practiceContentPanel;
+    @FXML
+    private Pane playerPane;
 
     private TimerController timerController;
     private ExerciseInstance exerciseInstance;
@@ -57,7 +61,14 @@ public class PracticeController implements Initializable {
         initCurrentExercises();
         select(null);
         initBpmButton();
+        initPlayerPane();
 
+    }
+
+    private void initPlayerPane() {
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        Parent player = fxmlLoader.load("playerForm.fxml");
+        playerPane.getChildren().add(player);
     }
 
     private void initBpmButton() {
