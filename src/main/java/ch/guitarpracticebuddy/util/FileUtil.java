@@ -45,7 +45,11 @@ public class FileUtil {
     }
 
     public static File toFiles(ExerciseDefinition exerciseDefinition, ExerciseAttachment exerciseAttachment) {
-        return new File(getExerciseDirectoryAbsolute(exerciseDefinition) + exerciseAttachment.getFilePath());
+        return new File(toFileString(exerciseDefinition, exerciseAttachment));
+    }
+
+    public static String toFileString(ExerciseDefinition exerciseDefinition, ExerciseAttachment exerciseAttachment) {
+        return getExerciseDirectoryAbsolute(exerciseDefinition) + exerciseAttachment.getFilePath();
     }
 
     public static Image loadImage(ExerciseDefinition exerciseDefinition, ExerciseAttachment exerciseAttachment) {

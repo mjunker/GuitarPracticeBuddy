@@ -10,11 +10,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -45,11 +43,17 @@ public class PracticeController implements Initializable {
     private Button startButton;
     @FXML
     private VBox practiceContentPanel;
+
     @FXML
-    private Pane playerPane;
+    ToggleButton playClipButton;
+    @FXML
+    ComboBox<ExerciseAttachment> clipComboBox;
+    @FXML
+    ProgressBar clipProgressBar;
 
     private TimerController timerController;
     private ExerciseInstance exerciseInstance;
+    private ClipPlayerController clipPlayerController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,16 +63,10 @@ public class PracticeController implements Initializable {
         initCurrentExercisesTable();
         initButtons();
         initCurrentExercises();
-        select(null);
+        clipPlayerController = new ClipPlayerController(playClipButton, clipComboBox, clipProgressBar);
         initBpmButton();
-        initPlayerPane();
+        select(null);
 
-    }
-
-    private void initPlayerPane() {
-        FxmlLoader fxmlLoader = new FxmlLoader();
-        Parent player = fxmlLoader.load("playerForm.fxml");
-        playerPane.getChildren().add(player);
     }
 
     private void initBpmButton() {
@@ -104,7 +102,7 @@ public class PracticeController implements Initializable {
 
     private void initPracticeContent() {
         practiceContentPanel.getChildren().clear();
-        if (exerciseDefinition != null && !exerciseDefinition.getAttachments().isEmpty()) {
+        if (exerciseDefinition != null) {
             practiceContentPanel.getChildren().add(new ImagePane(exerciseDefinition));
 
         }
@@ -162,6 +160,7 @@ public class PracticeController implements Initializable {
 
         bind(this.exerciseDefinition, exerciseDefinition);
         this.exerciseDefinition = exerciseDefinition;
+        clipPlayerController.setExerciseDefinition(exerciseDefinition);
 
         initExerciseInstance(exerciseDefinition);
         initPracticeContent();
@@ -179,6 +178,9 @@ public class PracticeController implements Initializable {
         this.startButton.setDisable(disabled);
         this.progressBar.setDisable(disabled);
         this.bpmButton.setDisable(disabled);
+        this.clipProgressBar.setDisable(disabled);
+        this.playClipButton.setDisable(disabled);
+        this.clipComboBox.setDisable(disabled);
 
     }
 

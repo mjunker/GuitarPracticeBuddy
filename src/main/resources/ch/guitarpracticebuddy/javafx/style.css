@@ -72,4 +72,18 @@
     -fx-text-fill: black;
 }
 
+.toggle-button#playButton {
+
+    -fx-background-color: null;
+    -fx-effect: null;
+    -fx-background-image: url('play.png');
+    -fx-background-repeat: stretch;
+    -fx-background-position: center, center;
+
+}
+
+.toggle-button#playButton:selected {
+
+    -fx-background-image: url('pause.png');
+}
 

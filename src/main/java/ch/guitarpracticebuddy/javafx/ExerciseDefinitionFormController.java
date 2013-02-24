@@ -15,6 +15,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -61,6 +63,9 @@ public class ExerciseDefinitionFormController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        selectFilesButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("open.png"))));
+        previewButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("preview.png"))));
+
         ratingField.setItems(FXCollections.observableArrayList(Rating.values()));
         ratingField.setConverter(new EnumToStringConverter(Rating.class));
 
@@ -93,7 +98,6 @@ public class ExerciseDefinitionFormController implements Initializable {
                 stage.show();
             }
         });
-
 
     }
 
