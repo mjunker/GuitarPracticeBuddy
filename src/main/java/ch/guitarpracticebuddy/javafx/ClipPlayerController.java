@@ -60,6 +60,7 @@ public class ClipPlayerController {
     public void setExerciseDefinition(ExerciseDefinition exerciseDefinition) {
         this.exerciseDefinition = exerciseDefinition;
         initContent();
+        setEnabled(!clipComboBox.getItems().isEmpty());
 
     }
 
@@ -68,6 +69,7 @@ public class ClipPlayerController {
         initConverter();
         initComboBoxSelectionListener();
         initClickableProgressBar();
+        setEnabled(false);
 
     }
 
@@ -182,5 +184,12 @@ public class ClipPlayerController {
             }
         }
         return mediaFiles;
+    }
+
+    public void setEnabled(boolean enabled) {
+        boolean disabled = !enabled;
+        this.clipProgressBar.setDisable(disabled);
+        this.playClipButton.setDisable(disabled);
+        this.clipComboBox.setDisable(disabled);
     }
 }

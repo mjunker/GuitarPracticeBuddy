@@ -79,7 +79,7 @@ public class ExerciseDefinitionFormController implements Initializable {
                 List<File> files = fileChooser.showOpenMultipleDialog(null);
                 if (files != null) {
                     List<String> relativePaths = FileUtil.copyFilesToApplicationHome(files, exerciseDefinition);
-                    exerciseDefinition.setAttachmentsAsString(ExerciseDefinition.createAttachmentString(relativePaths));
+                    exerciseDefinition.appendAttachmentsAsString(ExerciseDefinition.createAttachmentString(relativePaths));
                 }
             }
         });

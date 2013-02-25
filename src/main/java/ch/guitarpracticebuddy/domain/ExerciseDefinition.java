@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 @Entity
 public class ExerciseDefinition {
 
+    public static final String NEWLINE = "\n";
     @Id
     @GeneratedValue
     private int id;
@@ -57,7 +58,7 @@ public class ExerciseDefinition {
     private StringProperty attachmentsProperty;
 
     public static String createAttachmentString(List<String> paths) {
-        return Joiner.on("\n")
+        return Joiner.on(NEWLINE)
                 .skipNulls()
                 .join(paths);
     }
@@ -150,10 +151,14 @@ public class ExerciseDefinition {
         attachmentsAsStringProperty().set(content);
     }
 
+    public void appendAttachmentsAsString(String attachmentString) {
+        setAttachmentsAsString(getAttachmentsAsString() + NEWLINE + attachmentString);
+    }
+
     private void internalSetAttachment(String content) {
         List<ExerciseAttachment> attachments = new ArrayList<>();
 
-        for (String filePath : Splitter.on("\n").omitEmptyStrings().split(content)) {
+        for (String filePath : Splitter.on(NEWLINE).omitEmptyStrings().split(content)) {
             attachments.add(new ExerciseAttachment(filePath));
         }
         this.attachments = attachments;

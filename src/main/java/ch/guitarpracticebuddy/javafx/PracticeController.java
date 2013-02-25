@@ -160,12 +160,12 @@ public class PracticeController implements Initializable {
 
         bind(this.exerciseDefinition, exerciseDefinition);
         this.exerciseDefinition = exerciseDefinition;
-        clipPlayerController.setExerciseDefinition(exerciseDefinition);
 
         initExerciseInstance(exerciseDefinition);
         initPracticeContent();
         updateTimerController();
         setEnabled(this.exerciseDefinition != null);
+        clipPlayerController.setExerciseDefinition(exerciseDefinition);
 
     }
 
@@ -176,11 +176,6 @@ public class PracticeController implements Initializable {
         this.skipButton.setDisable(disabled);
         this.resetButton.setDisable(disabled);
         this.startButton.setDisable(disabled);
-        this.progressBar.setDisable(disabled);
-        this.bpmButton.setDisable(disabled);
-        this.clipProgressBar.setDisable(disabled);
-        this.playClipButton.setDisable(disabled);
-        this.clipComboBox.setDisable(disabled);
 
     }
 

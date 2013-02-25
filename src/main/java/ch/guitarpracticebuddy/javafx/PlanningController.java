@@ -8,10 +8,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
@@ -132,6 +135,8 @@ public class PlanningController implements Initializable {
                     return new StatusTableCell();
                 }
             });
+            column.setPrefWidth(50);
+
             weekOverviewTable.getColumns().add(column);
         }
 
@@ -244,7 +249,16 @@ public class PlanningController implements Initializable {
         @Override
         protected void updateItem(ExerciseStatus o, boolean b) {
             super.updateItem(o, b);
-            setText(Texts.getText(o));
+            String iconName = null;
+            if (o == ExerciseStatus.DONE) {
+                iconName = "yes.png";
+            } else if (o == ExerciseStatus.SKIPPED) {
+                iconName = "skip.png";
+            }
+            if (iconName != null) {
+                setGraphic(new ImageView(new Image(getClass().getResourceAsStream(iconName))));
+            }
+            setAlignment(Pos.CENTER);
         }
     }
 }
