@@ -212,7 +212,6 @@ public class PracticeController implements Initializable {
     private void select(ExerciseDefinition exerciseDefinition) {
 
         bind(this.exerciseDefinition, exerciseDefinition);
-        currentExercisesTable.getSelectionModel().clearSelection();
         this.exerciseDefinition = exerciseDefinition;
 
         initExerciseInstance(exerciseDefinition);

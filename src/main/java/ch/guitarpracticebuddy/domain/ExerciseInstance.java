@@ -84,7 +84,7 @@ public class ExerciseInstance {
     public void finish(int achievedBpm, int practicedTime) {
         setDone();
         setPracticedTime(practicedTime);
-        this.actualBpm = achievedBpm;
+        setBpm(achievedBpm);
 
     }
 

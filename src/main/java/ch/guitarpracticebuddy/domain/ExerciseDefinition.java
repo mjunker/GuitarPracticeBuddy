@@ -18,6 +18,7 @@ import java.util.List;
 
 import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 
 @Getter
 @Entity
@@ -82,7 +83,6 @@ public class ExerciseDefinition {
             if (getExerciseForDay(localDate) == null) {
                 ExerciseInstance instance = new ExerciseInstance(localDate.toDateTimeAtCurrentTime());
                 instance.setExerciseDefinition(this);
-                instance.setBpm(calculateInitialBpm());
                 plannedInstances.add(instance);
             }
 
@@ -122,9 +122,10 @@ public class ExerciseDefinition {
         return bpm;
     }
 
-    private int calculateInitialBpm() {
-        List<ExerciseInstance> instancesNotInFuture = select(plannedInstances, having(on(ExerciseInstance.class).getDay(), new IsNotInFuture()));
-        ExerciseInstance exerciseInstanceWithMaxBpm = selectMax(instancesNotInFuture, on(ExerciseInstance.class).getDay());
+    public int calculateSuggestedBpm() {
+        List<ExerciseInstance> instancesNotInFuture = select(plannedInstances, having(on(ExerciseInstance.class).getDay(), not(new IsInFuture())));
+        List<ExerciseInstance> doneInstances = select(instancesNotInFuture, having(on(ExerciseInstance.class).getStatus(), equalTo(ExerciseStatus.DONE)));
+        ExerciseInstance exerciseInstanceWithMaxBpm = selectMax(doneInstances, on(ExerciseInstance.class).getDay());
         if (exerciseInstanceWithMaxBpm != null && exerciseInstanceWithMaxBpm.getBpm() > 0) {
             return exerciseInstanceWithMaxBpm.getBpm();
         }
@@ -197,11 +198,11 @@ public class ExerciseDefinition {
         return getTitle().toLowerCase().replaceAll(" ", "_").replaceAll("\\W+", "");
     }
 
-    private static class IsNotInFuture extends BaseMatcher<DateTime> {
+    private static class IsInFuture extends BaseMatcher<DateTime> {
         @Override
         public boolean matches(Object o) {
             DateTime dateTime = (DateTime) o;
-            return dateTime.isBefore(DateTime.now().withTimeAtStartOfDay().plusDays(1));
+            return !dateTime.isBefore(DateTime.now().withTimeAtStartOfDay().plusDays(1));
         }
 
         @Override

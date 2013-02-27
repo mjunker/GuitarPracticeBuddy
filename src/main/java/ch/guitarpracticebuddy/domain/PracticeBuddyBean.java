@@ -91,8 +91,9 @@ public class PracticeBuddyBean {
             return Collections.emptyList();
         }
 
-        return select(getPracticePlanForDay(today).getExerciseDefinitions(),
+        List<ExerciseDefinition> exercises = select(getPracticePlanForDay(today).getExerciseDefinitions(),
                 having(on(ExerciseDefinition.class).isPlannedFor(today), equalTo(true)));
+        return exercises;
     }
 
     public void deletePracticeWeek(PracticeWeek practiceWeek) {
