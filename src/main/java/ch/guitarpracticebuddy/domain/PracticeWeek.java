@@ -1,9 +1,8 @@
 package ch.guitarpracticebuddy.domain;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import javafx.beans.property.StringProperty;
 import lombok.Getter;
-import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
@@ -21,13 +20,10 @@ public class PracticeWeek {
     @GeneratedValue
     @Getter
     private int id;
-
     @Getter
     private LocalDate dateFrom;
-
     @Getter
     private LocalDate dateTo;
-
     @Getter
     @ManyToMany(cascade = {CascadeType.PERSIST})
     private List<ExerciseDefinition> exerciseDefinitions = new ArrayList<ExerciseDefinition>();
@@ -56,8 +52,8 @@ public class PracticeWeek {
         }
     }
 
-    public boolean isForToday() {
-        return getInterval().contains(DateTime.now());
+    public boolean isForDay(LocalDate today) {
+        return getInterval().contains(today.toDateTimeAtCurrentTime());
     }
 
     public Interval getInterval() {
@@ -87,7 +83,7 @@ public class PracticeWeek {
     }
 
     public void clearAllExerciseInstances() {
-        for (ExerciseDefinition exerciseDefinition : new ArrayList<ExerciseDefinition>(exerciseDefinitions)) {
+        for (ExerciseDefinition exerciseDefinition : new ArrayList<>(exerciseDefinitions)) {
             deleteExerciseDef(exerciseDefinition);
         }
     }
@@ -101,7 +97,22 @@ public class PracticeWeek {
         return sum;
     }
 
-    public StringProperty titleProperty() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    public String getPracticeTimeAsString() {
+        int timeInMinutes = calculateTotalMinutes();
+        int hours = timeInMinutes / 60;
+        int minutes = timeInMinutes % 60;
+
+        String hourString = null;
+        String minuteString = null;
+
+        if (minutes > 0) {
+            minuteString = minutes + "m";
+        }
+
+        if (hours > 0) {
+            hourString = hours + "h";
+        }
+
+        return Joiner.on(" ").skipNulls().join(hourString, minuteString);
     }
 }

@@ -87,3 +87,20 @@
     -fx-background-image: url('pause.png');
 }
 
+.button#dayButtonLeft {
+
+    -fx-background-image: url('arrow_left.png');
+    -fx-background-color: null;
+    -fx-effect: null;
+    -fx-background-repeat: stretch;
+    -fx-background-position: center, center;
+}
+
+.button#dayButtonRight {
+
+    -fx-background-image: url('arrow_right.png');
+    -fx-background-color: null;
+    -fx-effect: null;
+    -fx-background-repeat: stretch;
+    -fx-background-position: center, center;
+}

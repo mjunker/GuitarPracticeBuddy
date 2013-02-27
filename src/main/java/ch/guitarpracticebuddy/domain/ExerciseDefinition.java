@@ -93,8 +93,8 @@ public class ExerciseDefinition {
         return plannedInstances;
     }
 
-    public boolean isPlannedForToday() {
-        return getTodaysExercises() != null;
+    public boolean isPlannedFor(LocalDate day) {
+        return getExerciseForDay(day) != null;
     }
 
     public int getSeconds() {

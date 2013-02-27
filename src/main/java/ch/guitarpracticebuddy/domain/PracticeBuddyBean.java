@@ -68,9 +68,9 @@ public class PracticeBuddyBean {
 
     }
 
-    public PracticeWeek getPracticePlanForToday() {
+    public PracticeWeek getPracticePlanForDay(LocalDate today) {
         for (PracticeWeek practiceWeek : practiceWeeks) {
-            if (practiceWeek.isForToday()) {
+            if (practiceWeek.isForDay(today)) {
                 return practiceWeek;
             }
         }
@@ -86,13 +86,13 @@ public class PracticeBuddyBean {
 
     }
 
-    public List<ExerciseDefinition> getExcercisesForToday() {
-        if (getPracticePlanForToday() == null) {
+    public List<ExerciseDefinition> getExcercisesForDay(LocalDate today) {
+        if (getPracticePlanForDay(today) == null) {
             return Collections.emptyList();
         }
 
-        return select(getPracticePlanForToday().getExerciseDefinitions(),
-                having(on(ExerciseDefinition.class).isPlannedForToday(), equalTo(true)));
+        return select(getPracticePlanForDay(today).getExerciseDefinitions(),
+                having(on(ExerciseDefinition.class).isPlannedFor(today), equalTo(true)));
     }
 
     public void deletePracticeWeek(PracticeWeek practiceWeek) {

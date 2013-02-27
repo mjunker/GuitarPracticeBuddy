@@ -3,7 +3,6 @@ package ch.guitarpracticebuddy.javafx;
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
 import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.PracticeWeek;
-import com.google.common.base.Joiner;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,7 +26,7 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
             .appendLiteral(".")
             .appendMonthOfYear(1)
             .appendLiteral(".")
-            .appendYear(2, 2)
+            .appendTwoDigitYear(2000)
             .toFormatter();
     public static final DateTimeFormatter DAY_ONLY_FORMATTER = new DateTimeFormatterBuilder()
             .appendDayOfWeekShortText()
@@ -152,26 +151,7 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
     private String createPracticeWeekString(PracticeWeek practiceWeek) {
         return DATE_TIME_FORMATTER.print(practiceWeek.getDateFrom())
                 + "-" + DATE_TIME_FORMATTER.print(practiceWeek.getDateTo())
-                + " " + createTimeString(practiceWeek) + "";
-    }
-
-    private String createTimeString(PracticeWeek practiceWeek) {
-        int timeInMinutes = practiceWeek.calculateTotalMinutes();
-        int hours = timeInMinutes / 60;
-        int minutes = timeInMinutes % 60;
-
-        String hourString = null;
-        String minuteString = null;
-
-        if (minutes > 0) {
-            minuteString = minutes + "m";
-        }
-
-        if (hours > 0) {
-            hourString = hours + "h";
-        }
-
-        return Joiner.on(" ").skipNulls().join(hourString, minuteString);
+                + " " + practiceWeek.getPracticeTimeAsString() + "";
     }
 
     public ExerciseDefinition getExerciseDefinition() {

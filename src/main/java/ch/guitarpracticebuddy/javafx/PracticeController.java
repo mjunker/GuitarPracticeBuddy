@@ -1,6 +1,7 @@
 package ch.guitarpracticebuddy.javafx;
 
 import ch.guitarpracticebuddy.domain.*;
+import com.google.common.base.Joiner;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,16 +18,18 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import org.joda.time.LocalDate;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PracticeController implements Initializable {
 
+    ObservableList<ExerciseDefinition> exerciseDefinitions = FXCollections.observableArrayList();
     @FXML
     private ProgressIndicator progressBar;
     @FXML
-    private ListView currentExercisesTable;
+    private ListView<ExerciseDefinition> currentExercisesTable;
     @FXML
     private Slider bpmSlider;
     @FXML
@@ -43,17 +46,22 @@ public class PracticeController implements Initializable {
     private Button startButton;
     @FXML
     private VBox practiceContentPanel;
-
     @FXML
-    ToggleButton playClipButton;
+    private Label practiceWeekInfoLabel;
     @FXML
-    ComboBox<ExerciseAttachment> clipComboBox;
+    private ToggleButton playClipButton;
     @FXML
-    ProgressBar clipProgressBar;
-
+    private ComboBox<ExerciseAttachment> clipComboBox;
+    @FXML
+    private ProgressBar clipProgressBar;
+    @FXML
+    private Button previousDayButton;
+    @FXML
+    private Button nextDayButton;
     private TimerController timerController;
     private ExerciseInstance exerciseInstance;
     private ClipPlayerController clipPlayerController;
+    private LocalDate today = LocalDate.now();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -62,11 +70,46 @@ public class PracticeController implements Initializable {
         initTimerController();
         initCurrentExercisesTable();
         initButtons();
-        initCurrentExercises();
+
         clipPlayerController = new ClipPlayerController(playClipButton, clipComboBox, clipProgressBar);
         initBpmButton();
-        select(null);
+        initDayButtons();
+        currentExercisesTable.setItems(exerciseDefinitions);
 
+        initExercisesForDayAndDeselect();
+
+    }
+
+    private void initDayButtons() {
+
+        this.nextDayButton.setId("dayButtonRight");
+        this.previousDayButton.setId("dayButtonLeft");
+
+        this.nextDayButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                updateDay(today.plusDays(1));
+
+            }
+        });
+
+        this.previousDayButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                updateDay(today.minusDays(1));
+            }
+        });
+    }
+
+    private void updateDay(LocalDate newDay) {
+        this.today = newDay;
+        initExercisesForDayAndDeselect();
+    }
+
+    private void initExercisesForDayAndDeselect() {
+        initDayLabel();
+        initCurrentExercises();
+        select(null);
     }
 
     private void initBpmButton() {
@@ -145,10 +188,20 @@ public class PracticeController implements Initializable {
 
     }
 
-    private ObservableList<ExerciseDefinition> initCurrentExercises() {
-        ObservableList<ExerciseDefinition> exerciseDefinitions = FXCollections.observableArrayList(PracticeBuddyBean.getInstance().getExcercisesForToday());
-        currentExercisesTable.setItems(exerciseDefinitions);
-        return exerciseDefinitions;
+    private void initCurrentExercises() {
+        exerciseDefinitions.clear();
+        exerciseDefinitions.addAll(PracticeBuddyBean.getInstance().getExcercisesForDay(today));
+
+    }
+
+    private void initDayLabel() {
+        PracticeWeek practicePlanForDay = PracticeBuddyBean.getInstance().getPracticePlanForDay(today);
+        String practiceTimeAsString = null;
+        if (practicePlanForDay != null) {
+            practiceTimeAsString = practicePlanForDay.getPracticeTimeAsString();
+        }
+        String text = Joiner.on(" ").skipNulls().join(ExerciseDefinitionTreeCell.DATE_TIME_FORMATTER.print(today), practiceTimeAsString);
+        practiceWeekInfoLabel.setText(text);
     }
 
     private void initRatingBox() {
@@ -159,6 +212,7 @@ public class PracticeController implements Initializable {
     private void select(ExerciseDefinition exerciseDefinition) {
 
         bind(this.exerciseDefinition, exerciseDefinition);
+        currentExercisesTable.getSelectionModel().clearSelection();
         this.exerciseDefinition = exerciseDefinition;
 
         initExerciseInstance(exerciseDefinition);
@@ -181,7 +235,7 @@ public class PracticeController implements Initializable {
 
     private void initExerciseInstance(ExerciseDefinition exerciseDefinition) {
         if (this.exerciseDefinition != null) {
-            this.exerciseInstance = exerciseDefinition.getTodaysExercises();
+            this.exerciseInstance = exerciseDefinition.getExerciseForDay(today);
         } else {
             this.exerciseInstance = null;
         }
@@ -192,28 +246,44 @@ public class PracticeController implements Initializable {
     }
 
     public void bind(ExerciseDefinition oldValue, ExerciseDefinition newValue) {
-        if (oldValue != null) {
-            Bindings.unbindBidirectional(ratingBox.valueProperty(), oldValue.ratingProperty());
-            Bindings.unbindBidirectional(bpmSlider.maxProperty(), oldValue.bpmProperty());
-            Bindings.unbindBidirectional(bpmSlider.valueProperty(), oldValue.getTodaysExercises().bpmProperty());
-            Bindings.unbindBidirectional(bpmButton.textProperty(), oldValue.getTodaysExercises().bpmProperty());
-            progressBar.progressProperty().unbind();
-        }
-
-        if (newValue != null) {
-            Bindings.bindBidirectional(ratingBox.valueProperty(), newValue.ratingProperty());
-            Bindings.bindBidirectional(bpmSlider.maxProperty(), newValue.bpmProperty());
-            Bindings.bindBidirectional(bpmSlider.valueProperty(), newValue.getTodaysExercises().bpmProperty());
-            Bindings.bindBidirectional(bpmButton.textProperty(), newValue.getTodaysExercises().bpmProperty(), (StringConverter) new IntegerStringConverter());
-            progressBar.progressProperty().bind(newValue.getTodaysExercises().practiceTimeProgressProperty());
-
-        }
+        unbindOldValue(oldValue);
+        initCurrentExerciseInstance(newValue);
+        bindNewValue(newValue);
 
     }
 
+    private void initCurrentExerciseInstance(ExerciseDefinition newValue) {
+        if (newValue != null) {
+            this.exerciseInstance = newValue.getExerciseForDay(today);
+        } else {
+            this.exerciseInstance = null;
+        }
+    }
+
+    private void unbindOldValue(ExerciseDefinition oldValue) {
+        if (oldValue != null) {
+            Bindings.unbindBidirectional(ratingBox.valueProperty(), oldValue.ratingProperty());
+            Bindings.unbindBidirectional(bpmSlider.maxProperty(), oldValue.bpmProperty());
+            Bindings.unbindBidirectional(bpmSlider.valueProperty(), this.exerciseInstance.bpmProperty());
+            Bindings.unbindBidirectional(bpmButton.textProperty(), this.exerciseInstance.bpmProperty());
+            progressBar.progressProperty().unbind();
+        }
+    }
+
+    private void bindNewValue(ExerciseDefinition newValue) {
+        if (newValue != null) {
+            Bindings.bindBidirectional(ratingBox.valueProperty(), newValue.ratingProperty());
+            Bindings.bindBidirectional(bpmSlider.maxProperty(), newValue.bpmProperty());
+            Bindings.bindBidirectional(bpmSlider.valueProperty(), this.exerciseInstance.bpmProperty());
+            Bindings.bindBidirectional(bpmButton.textProperty(), this.exerciseInstance.bpmProperty(), (StringConverter) new IntegerStringConverter());
+            progressBar.progressProperty().bind(this.exerciseInstance.practiceTimeProgressProperty());
+
+        }
+    }
+
     public void refresh() {
-        initCurrentExercises();
-        currentExercisesTable.getSelectionModel().clearSelection();
+        initExercisesForDayAndDeselect();
+
     }
 
     private class ExerciseDefinitionListCell extends ListCell<ExerciseDefinition> {
@@ -223,7 +293,7 @@ public class PracticeController implements Initializable {
             super.updateItem(exerciseDefinition, b);
 
             if (exerciseDefinition != null) {
-                exerciseDefinition.getTodaysExercises().statusProperty().addListener(new ChangeListener<ExerciseStatus>() {
+                exerciseDefinition.getExerciseForDay(today).statusProperty().addListener(new ChangeListener<ExerciseStatus>() {
                     @Override
                     public void changed(ObservableValue<? extends ExerciseStatus> observableValue, ExerciseStatus exerciseStatus, ExerciseStatus exerciseStatus2) {
                         setPracticeListStyle(exerciseDefinition);
@@ -241,7 +311,7 @@ public class PracticeController implements Initializable {
             getStyleClass().remove(StyleClass.SKIP.getStyle());
             getStyleClass().remove(StyleClass.PLANNED.getStyle());
 
-            switch (exerciseDefinition.getTodaysExercises().getStatus()) {
+            switch (exerciseDefinition.getExerciseForDay(today).getStatus()) {
 
                 case DONE:
                     getStyleClass().add(StyleClass.DONE.getStyle());
