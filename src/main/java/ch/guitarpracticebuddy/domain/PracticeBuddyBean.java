@@ -1,6 +1,8 @@
 package ch.guitarpracticebuddy.domain;
 
 import com.google.common.base.Strings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.LocalDate;
@@ -17,7 +19,7 @@ public class PracticeBuddyBean {
 
     private final EntityManager em;
     @Setter
-    private List<Tag> tags;
+    private ObservableList<Tag> tags;
     @Setter
     @Getter
     private List<PracticeWeek> practiceWeeks;
@@ -48,7 +50,7 @@ public class PracticeBuddyBean {
     private void init() {
         this.practiceWeeks = loadPracticePlans(em);
         this.exerciseDefinitions = loadExcerciseDefs(em);
-        this.tags = loadTags();
+        this.tags = FXCollections.observableArrayList(loadTags());
     }
 
     private List<Tag> loadTags() {
@@ -125,7 +127,7 @@ public class PracticeBuddyBean {
     }
 
     public Tag addTag(String value) {
-        if (!Strings.isNullOrEmpty(value)) {
+        if (!Strings.isNullOrEmpty(value) && !doesTagAlreadyExist(value)) {
             Tag tag = new Tag(value);
             this.tags.add(tag);
             this.em.persist(tag);
@@ -136,8 +138,17 @@ public class PracticeBuddyBean {
 
     }
 
-    public List<Tag> getTags() {
-        return new ArrayList<>(tags);
+    private boolean doesTagAlreadyExist(String value) {
+        for (Tag tag : tags) {
+            if (tag.getName().equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ObservableList<Tag> getTags() {
+        return tags;
     }
 
 }

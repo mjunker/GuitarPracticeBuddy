@@ -14,21 +14,9 @@
     <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1.0" prefWidth="-1.0" rotateGraphic="false" side="LEFT" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
       <tabs>
         <Tab fx:id="practicingContent" content="$null" text="Practicing" />
-        <Tab text="Planning">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <ScrollPane id="ScrollPane" layoutX="14.0" layoutY="160.0" prefViewportHeight="455.0" prefViewportWidth="336.0">
-                  <content>
-                    <TreeView fx:id="planningTree" prefHeight="455.0" prefWidth="336.0" />
-                  </content>
-                </ScrollPane>
-                <TableView fx:id="practiceWeekTable" layoutX="364.0" layoutY="388.0" prefHeight="228.0" prefWidth="656.0" />
-                <FlowPane fx:id="tagPanel" layoutX="14.0" layoutY="14.0" prefHeight="146.0" prefWidth="336.0" />
-              </children>
-            </AnchorPane>
-          </content>
-        </Tab>
+        <Tab fx:id="planningContent" content="$null" text="Planning" />
+        <Tab content="$null" text="Tags" />
+        <Tab content="$null" text="Settings" />
       </tabs>
     </TabPane>
   </children>

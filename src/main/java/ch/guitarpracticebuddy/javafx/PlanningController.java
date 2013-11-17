@@ -4,6 +4,7 @@ import ch.guitarpracticebuddy.domain.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -55,6 +56,12 @@ public class PlanningController implements Initializable {
         initPlanningTree();
         initRatingFilterPane();
         setSelectedExerciseDefinition(null);
+        PracticeBuddyBean.getInstance().getTags().addListener(new ListChangeListener<Tag>() {
+            @Override
+            public void onChanged(Change<? extends Tag> change) {
+                updateTagPanel();
+            }
+        });
 
     }
 
@@ -221,7 +228,7 @@ public class PlanningController implements Initializable {
 
         private TagButton(Tag tag) {
             this.tag = tag;
-            setText(tag.getName());
+            textProperty().bind(tag.nameProperty());
             setId("tagButton");
             getStyleClass().add("tag");
 

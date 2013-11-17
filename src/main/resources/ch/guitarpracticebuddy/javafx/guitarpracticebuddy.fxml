@@ -17,6 +17,8 @@
             <tabs>
                 <Tab fx:id="practicingContent" content="$null" text="Practicing"/>
                 <Tab fx:id="planningContent" content="$null" text="Planning"/>
+                <Tab fx:id="tagsContent" content="$null" text="Tags"/>
+                <Tab fx:id="settingsContent" content="$null" text="Settings"/>
             </tabs>
         </TabPane>
     </children>

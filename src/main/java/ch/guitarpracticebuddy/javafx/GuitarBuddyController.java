@@ -25,8 +25,12 @@ public class GuitarBuddyController implements Initializable {
     @FXML
     private Tab planningContent;
 
+    @FXML
+    private Tab tagsContent;
+
     private PlanningController planningController;
     private PracticeController practiceFormController;
+    private TagAdminController tagAdminController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,11 +45,18 @@ public class GuitarBuddyController implements Initializable {
         planningController = planningPaneLoader.getFxmlLoader().getController();
         planningContent.setContent(planningRoot);
 
+        FxmlLoader tagAdminPanelLoader = new FxmlLoader();
+        Parent tagAdminPanel = tagAdminPanelLoader.load("tagAdminPanel.fxml");
+        tagAdminController = tagAdminPanelLoader.getFxmlLoader().getController();
+
+        tagsContent.setContent(tagAdminPanel);
+
         practicingContent.setOnSelectionChanged(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
                 planningController.refresh();
                 practiceFormController.refresh();
+                tagAdminController.refresh();
             }
         });
 
