@@ -42,6 +42,8 @@ public class PlanningController implements Initializable {
     private PlanningTree planningTree;
     @FXML
     private FlowPane ratingFilterPane;
+    @FXML
+    private AllExercisesList allExercisesList;
     private ExerciseDefinitionFormController formController;
     private PracticeBuddyBean practiceBuddyBean;
     private List<Tag> selectedTags = new ArrayList<>();
@@ -53,16 +55,22 @@ public class PlanningController implements Initializable {
         this.practiceBuddyBean = PracticeBuddyBean.getInstance();
         initForm();
         updateTagPanel();
+        initAllExerciseTree();
         initPlanningTree();
+        initListeners();
+
         initRatingFilterPane();
         setSelectedExerciseDefinition(null);
-        PracticeBuddyBean.getInstance().getTags().addListener(new ListChangeListener<Tag>() {
+
+    }
+
+    private void initListeners() {
+        this.allExercisesList.setChangeListener(new ExerciseDeletedListener() {
             @Override
-            public void onChanged(Change<? extends Tag> change) {
-                updateTagPanel();
+            public void deleted(ExerciseDefinition exerciseDefinition) {
+                planningTree.removeSelectedNodesWithSameUserObjectFromTree(exerciseDefinition);
             }
         });
-
     }
 
     private void initRatingFilterPane() {
@@ -80,8 +88,17 @@ public class PlanningController implements Initializable {
     }
 
     private void initPlanningTree() {
-        planningTree.setPracticeBuddyBean(PracticeBuddyBean.getInstance());
-        planningTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem>() {
+        planningTree.getSelectionModel().selectedItemProperty().addListener(getSelectedExerciseDefinitionChangeListener());
+        planningTree.refresh();
+    }
+
+    private void initAllExerciseTree() {
+        allExercisesList.getSelectionModel().selectedItemProperty().addListener(getSelectedExerciseDefinitionChangeListener());
+        allExercisesList.refresh();
+    }
+
+    private ChangeListener<TreeItem> getSelectedExerciseDefinitionChangeListener() {
+        return new ChangeListener<TreeItem>() {
 
             @Override
             public void changed(ObservableValue<? extends TreeItem> observableValue, TreeItem treeItem, TreeItem treeItem2) {
@@ -93,7 +110,7 @@ public class PlanningController implements Initializable {
                 updatePracticeWeekOverview();
 
             }
-        });
+        };
     }
 
     private void setSelectedExerciseDefinition(ExerciseDefinition exerciseDefinition) {
@@ -163,6 +180,13 @@ public class PlanningController implements Initializable {
             tagPanel.getChildren().add(tagButton);
 
         }
+
+        PracticeBuddyBean.getInstance().getTags().addListener(new ListChangeListener<Tag>() {
+            @Override
+            public void onChanged(Change<? extends Tag> change) {
+                updateTagPanel();
+            }
+        });
     }
 
     private void toggleTagSelected(Tag tag) {
@@ -185,9 +209,9 @@ public class PlanningController implements Initializable {
 
     private void filterExercises() {
 
-        planningTree.getSelectionModel().clearSelection();
+        allExercisesList.getSelectionModel().clearSelection();
         setSelectedExerciseDefinition(null);
-        planningTree.setFilter(selectedTags, selectedRatings);
+        allExercisesList.setFilter(selectedTags, selectedRatings);
     }
 
     private void initForm() {

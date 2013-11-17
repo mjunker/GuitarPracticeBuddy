@@ -1,24 +1,17 @@
 package ch.guitarpracticebuddy.javafx;
 
 import ch.guitarpracticebuddy.domain.ExerciseDefinition;
-import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
 import ch.guitarpracticebuddy.domain.PracticeWeek;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.*;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
 public class ExerciseDefinitionTreeCell extends TreeCell {
 
-    public static final TreeItem PRACTICE_PLAN_ROOT_NODE = new TreeItem("Practice Plans");
-    public static final TreeItem ALL_EXERCISES_NODE = new TreeItem("All Exercises");
     public static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
             .appendDayOfWeekShortText()
             .appendLiteral(", ")
@@ -33,8 +26,12 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
             .toFormatter();
     private ExerciseDefinition exerciseDefinition;
     private PracticeWeek practiceWeek;
+    private final TreeItem rootNode;
+    private final ContextMenuFactory contextMenuFactory;
 
-    public ExerciseDefinitionTreeCell() {
+    public ExerciseDefinitionTreeCell(TreeItem root, ContextMenuFactory contextMenuFactory) {
+        this.rootNode = root;
+        this.contextMenuFactory = contextMenuFactory;
     }
 
     @Override
@@ -54,42 +51,10 @@ public class ExerciseDefinitionTreeCell extends TreeCell {
 
         } else {
             this.textProperty().bind(new SimpleStringProperty((String) object));
-            if (PRACTICE_PLAN_ROOT_NODE.equals(getTreeItem())) {
-                setContextMenu(createPracticePlanRootMenu());
-            } else if (ALL_EXERCISES_NODE.equals(getTreeItem())) {
-                setContextMenu(createExerciseDefinitionRootMenu());
-            }
 
         }
+        setContextMenu(contextMenuFactory.createPracticePlanRootMenu());
 
-    }
-
-    private ContextMenu createPracticePlanRootMenu() {
-        MenuItem addItem = new MenuItem("Add practice plan");
-        addItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                PracticeWeek newPracticePlan = PracticeBuddyBean.getInstance()
-                        .createNewPracticePlan(DateTime.now().toLocalDate(), DateTime.now().plusDays(6).toLocalDate());
-                PRACTICE_PLAN_ROOT_NODE.getChildren().add(new TreeItem<>(newPracticePlan));
-
-            }
-        });
-        return new ContextMenu(addItem);
-    }
-
-    private ContextMenu createExerciseDefinitionRootMenu() {
-        MenuItem addItem = new MenuItem("Add exercise");
-        addItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                ExerciseDefinition newExerciseDefinition = PracticeBuddyBean.getInstance().createNewExerciseDefinition();
-                newExerciseDefinition.setTitle("New exercise");
-                ALL_EXERCISES_NODE.getChildren().add(0, new TreeItem<>(newExerciseDefinition));
-
-            }
-        });
-        return new ContextMenu(addItem);
     }
 
     private void initDragAndDropExerciseDefinition() {

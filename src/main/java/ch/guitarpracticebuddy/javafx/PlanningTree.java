@@ -1,87 +1,23 @@
 package ch.guitarpracticebuddy.javafx;
 
-import ch.guitarpracticebuddy.domain.*;
+import ch.guitarpracticebuddy.domain.ExerciseDefinition;
+import ch.guitarpracticebuddy.domain.PracticeBuddyBean;
+import ch.guitarpracticebuddy.domain.PracticeWeek;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TreeCell;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.KeyCode;
-import javafx.util.Callback;
+import org.joda.time.DateTime;
 
-import java.util.ArrayList;
-import java.util.List;
+public class PlanningTree extends AbstractExerciseDefintionTreeView {
 
-public class PlanningTree extends TreeView {
-
-    private ExerciseDefinition selectedExerciseDefinition;
     private PracticeWeek selectedPracticeWeek;
-    private PracticeBuddyBean practiceBuddyBean;
-    private List<Tag> selectedTags = new ArrayList<>();
-    private TreeItem root = new TreeItem();
-    private List<Rating> selectedRatings = new ArrayList<>();
-
-    public PlanningTree() {
-        initTreeModel();
-        addSelectionListener();
-        addKeyListener();
-        configure();
-    }
-
-    private void initTreeModel() {
-
-        root.getChildren().add(ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE);
-        root.getChildren().add(ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE);
-        setRoot(root);
-
-    }
-
-    private void configure() {
-        setShowRoot(false);
-        getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        setCellFactory(new Callback<TreeView, TreeCell>() {
-            @Override
-            public TreeCell call(TreeView p) {
-                return new ExerciseDefinitionTreeCell();
-            }
-        });
-
-    }
-
-    private void addKeyListener() {
-
-        setOnKeyPressed(new EventHandler<javafx.scene.input.KeyEvent>() {
-            @Override
-            public void handle(javafx.scene.input.KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.BACK_SPACE) {
-                    deleteFromModel();
-                }
-            }
-        });
-
-    }
-
-    private void addSelectionListener() {
-        getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object o, Object o2) {
-                PathExtractor pathExtractor = new PathExtractor((TreeItem) getSelectionModel().getSelectedItem()).invoke();
-                selectedExerciseDefinition = pathExtractor.getExerciseDefinition();
-                selectedPracticeWeek = pathExtractor.getPracticeWeek();
-
-            }
-        });
-
-    }
 
     private boolean isExerciseDefOfPracticeWeekSelected() {
         return selectedExerciseDefinition != null && selectedPracticeWeek != null;
-    }
-
-    private boolean isStandaloneExerciseDefSelected() {
-        return selectedExerciseDefinition != null && selectedPracticeWeek == null;
     }
 
     private boolean isPracticeWeekSelected() {
@@ -92,30 +28,10 @@ public class PlanningTree extends TreeView {
         return selectedPracticeWeek;
     }
 
-    public void setFilter(List<Tag> selectedTags, List<Rating> selectedRatings) {
-        this.selectedTags = selectedTags;
-        this.selectedRatings = selectedRatings;
-        filter();
-
-    }
-
-    private void filter() {
-        buildTree();
-    }
-
-    public void refresh() {
-        buildTree();
-    }
-
-    private void deleteFromModel() {
+    protected void deleteFromModel() {
         if (isExerciseDefOfPracticeWeekSelected()) {
             selectedPracticeWeek.deleteExerciseDef(selectedExerciseDefinition);
             removeSelectedNodeFromTree();
-
-        } else if (isStandaloneExerciseDefSelected()) {
-            practiceBuddyBean.deleteExerciseDefinition(selectedExerciseDefinition);
-            removeSelectedNodesWithSameUserObjectFromTree();
-
         } else if (isPracticeWeekSelected()) {
             practiceBuddyBean.deletePracticeWeek(selectedPracticeWeek);
             removeSelectedNodeFromTree();
@@ -124,21 +40,17 @@ public class PlanningTree extends TreeView {
 
     }
 
-    private void removeSelectedNodesWithSameUserObjectFromTree() {
+    protected void addSelectionListener() {
 
-        removeAllNodesWithSameModel(getRoot(), ((TreeItem) getSelectionModel().getSelectedItem()).getValue());
-
-    }
-
-    private void removeAllNodesWithSameModel(TreeItem root, Object userObject) {
-        if (root.getValue() != null && root.getValue().equals(userObject)) {
-            removeNode(root);
-        } else {
-            for (TreeItem child : new ArrayList<TreeItem>(root.getChildren())) {
-                removeAllNodesWithSameModel(child, userObject);
+        super.addSelectionListener();
+        getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object o, Object o2) {
+                PathExtractor pathExtractor = new PathExtractor((TreeItem) getSelectionModel().getSelectedItem()).invoke();
+                selectedPracticeWeek = pathExtractor.getPracticeWeek();
 
             }
-        }
+        });
 
     }
 
@@ -147,31 +59,36 @@ public class PlanningTree extends TreeView {
         removeNode((TreeItem) getSelectionModel().getSelectedItem());
     }
 
-    private void removeNode(TreeItem nodeToRemove) {
+    protected void buildTree() {
 
-        nodeToRemove.getParent().getChildren().remove(nodeToRemove);
+        root.getChildren().clear();
+        addPracticePlanModels();
     }
 
-    private void buildTree() {
+    @Override
+    protected ContextMenuFactory getContextMenuFactory() {
+        return new ContextMenuFactory() {
+            @Override
+            public ContextMenu createPracticePlanRootMenu() {
+                MenuItem addItem = new MenuItem("Add practice plan");
+                addItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        PracticeWeek newPracticePlan = PracticeBuddyBean.getInstance()
+                                .createNewPracticePlan(DateTime.now().toLocalDate(), DateTime.now().plusDays(6).toLocalDate());
+                        root.getChildren().add(new TreeItem<>(newPracticePlan));
 
-        ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE.getChildren().clear();
-        ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE.getChildren().clear();
-
-        addPracticePlanModels(ExerciseDefinitionTreeCell.PRACTICE_PLAN_ROOT_NODE);
-        addAllExcercisesModels(ExerciseDefinitionTreeCell.ALL_EXERCISES_NODE);
+                    }
+                });
+                return new ContextMenu(addItem);
+            }
+        };
     }
 
-    private void addAllExcercisesModels(TreeItem rootNode) {
-        for (ExerciseDefinition exerciseDefinition : practiceBuddyBean.getExerciseDefinitions(selectedTags, selectedRatings)) {
-            TreeItem node = createExcerciseDefNode(exerciseDefinition);
-            rootNode.getChildren().add(node);
-        }
-    }
-
-    private void addPracticePlanModels(TreeItem rootNode) {
+    private void addPracticePlanModels() {
         for (final PracticeWeek practiceWeek : practiceBuddyBean.getPracticeWeeks()) {
             TreeItem node = createPracticeWeekNode(practiceWeek);
-            rootNode.getChildren().add(node);
+            root.getChildren().add(node);
             addExerciseDefNodes(practiceWeek, node);
 
         }
@@ -187,15 +104,6 @@ public class PlanningTree extends TreeView {
             practicePlanNode.getChildren().add(0, node);
 
         }
-    }
-
-    private TreeItem createExcerciseDefNode(final ExerciseDefinition exerciseDefinition) {
-        return new TreeItem(exerciseDefinition);
-    }
-
-    public void setPracticeBuddyBean(PracticeBuddyBean practiceBuddyBean) {
-        this.practiceBuddyBean = practiceBuddyBean;
-        refresh();
     }
 
 }
